@@ -144,7 +144,8 @@ export class ClaudeCodeRunner {
                 this.currentProcess = ProcessSpawner.spawn({
                     claudePath,
                     args,
-                    workingDir
+                    workingDir,
+                    onDebugOutput: (msg) => this.sendOutput(msg)
                 });
                 this.sendOutput(`[DEBUG] Process spawned successfully, PID: ${this.currentProcess.pid}\n`);
             } catch (spawnError) {
