@@ -9,3 +9,7 @@
 - Vault access control
 - Custom system prompts
 - Activity monitoring
+
+### Version 1.0.1
+- Improved claude code binary detection and spawn process on different OS than linux
+- Added support to setup custom models (Not Anthropic Claude models)
