@@ -100,6 +100,18 @@ export class ClaudeCodeRunner {
                 : `✓ Resuming session: ${sessionInfo.sessionId}\n`
             );
 
+            // 1a. Create note.md file in session directory for Claude to edit
+            const fs = require('fs');
+            const path = require('path');
+            const noteFilePath = path.join(sessionInfo.sessionDir, 'note.md');
+            const contentToEdit = request.selectedText || request.noteContent;
+            try {
+                fs.writeFileSync(noteFilePath, contentToEdit, 'utf8');
+                this.sendOutput(`📝 Created note.md for editing\n`);
+            } catch (e) {
+                this.sendOutput(`⚠️ Error creating note.md: ${e}\n`);
+            }
+
             // 2. Build prompt
             const fullPrompt = PromptBuilder.buildPrompt(
                 request,
@@ -185,7 +197,7 @@ export class ClaudeCodeRunner {
 
                     try {
                         const event = JSON.parse(line);
-                        console.log(event);
+                        //console.log(event);
                         
                         output.push(line);
 
@@ -250,7 +262,27 @@ export class ClaudeCodeRunner {
 
                     this.sendOutput(`\n[DEBUG] Full response length: ${parsed.assistantText.length} chars`);
 
-                    // 7. Save session data
+                    // 7. Read the modified note.md file (if it was modified)
+                    let modifiedContent: string | undefined = undefined;
+                    try {
+                        if (fs.existsSync(noteFilePath)) {
+                            const noteContent = fs.readFileSync(noteFilePath, 'utf8');
+
+                            // Check if content actually changed
+                            if (noteContent !== contentToEdit && !request.conversationalMode) {
+                                modifiedContent = noteContent;
+                                this.sendOutput(`\n✅ note.md was modified by Claude\n`);
+                            } else {
+                                this.sendOutput(`\n ℹ️  note.md unchanged (likely a question/analysis)\n`);
+                            }
+                        } else {
+                            this.sendOutput(`\n⚠️  note.md not found after execution\n`);
+                        }
+                    } catch (e) {
+                        this.sendOutput(`\n⚠️  Error reading note.md: ${e}\n`);
+                    }
+
+                    // 8. Save session data
                     try {
                         SessionManager.saveConversationHistory(
                             sessionInfo.sessionDir,
@@ -267,20 +299,25 @@ export class ClaudeCodeRunner {
                         this.sendOutput(`\n⚠ Error saving session data: ${e}\n`);
                     }
 
-                    // 8. Build and return response
-                    const response = ResponseParser.buildResponse(parsed, output, isPermissionRequest);
+                    // 9. Build and return response
                     const totalDuration = Date.now() - startTime;
+                    const response: ClaudeCodeResponse = {
+                        success: true,
+                        modifiedContent: modifiedContent,
+                        assistantMessage: parsed.assistantText,
+                        output: output,
+                        tokenUsage: parsed.tokenUsage,
+                        isPermissionRequest
+                    };
 
                     if (response.success) {
-                        if (response.modifiedContent) {
+                        if (modifiedContent) {
                             this.sendOutput(`\n✓ Claude Code completed successfully in ${(totalDuration / 1000).toFixed(2)}s`);
                         } else if (isPermissionRequest) {
                             this.sendOutput(`\n⚠️ Permission request detected - waiting for user approval`);
                         } else {
                             this.sendOutput(`\n✓ Analysis completed (no file modifications) in ${(totalDuration / 1000).toFixed(2)}s`);
                         }
-                    } else {
-                        this.sendOutput(`\n✗ No markdown content found in response`);
                     }
 
                     resolve(response);
@@ -368,40 +405,8 @@ export class ClaudeCodeRunner {
      */
     private sendOutput(text: string, isMarkdown: boolean = false, isStreaming?: boolean | string, isAssistantMessage?: boolean): void {
         if (this.outputCallback) {
-            if (isAssistantMessage) {
-                console.log('[ClaudeCodeRunner sendOutput] isAssistantMessage=', isAssistantMessage, 'text=', text.substring(0, 20));
-            }
             this.outputCallback(text, isMarkdown, isStreaming, isAssistantMessage);
         }
     }
 
-    /**
-     * Extract final content after the separator
-     * If separator is present, it's an edit request
-     * If no separator, it's a question/analysis (no file changes)
-     */
-    private extractFinalContent(content: string): string {
-        const result = ResponseContentExtractor.extractFinalContent(content);
-
-        if (!result.hasChanges) {
-            // No separator means this was a question/analysis, not an edit request
-            this.sendOutput(`\n💬 Claude provided analysis (no file changes)\n`);
-        }
-
-        return result.content;
-    }
-
-    /**
-     * Detect if Claude's response is asking for permission to perform an action
-     */
-    private detectPermissionRequest(text: string): boolean {
-        return ResponseContentExtractor.detectPermissionRequest(text);
-    }
-
-    /**
-     * Update settings
-     */
-    updateSettings(settings: ClaudeCodeSettings): void {
-        this.settings = settings;
-    }
 }

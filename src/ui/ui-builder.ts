@@ -160,6 +160,7 @@ export class UIBuilder {
 
         // Right column: Agent Activity (tool executions)
         const activityColumn = agentContainer.createEl('div', { cls: 'claude-code-agent-column claude-code-activity-column' });
+        activityColumn.style.display = 'none'; // Hidden by default until steps are added
 
         const activityHeader = activityColumn.createEl('div', { cls: 'claude-code-agent-column-header collapsible-header' });
         const activityTitle = activityHeader.createEl('span', { cls: 'collapsible-title' });
@@ -405,8 +406,8 @@ export class UIBuilder {
         // Tabs container
         const previewTabsContainer = previewContent.createEl('div', { cls: 'claude-code-preview-tabs' });
 
-        const rawTab = previewTabsContainer.createEl('div', { cls: 'preview-tab active', text: 'Raw' });
-        const diffTab = previewTabsContainer.createEl('div', { cls: 'preview-tab', text: 'Diff' });
+        const rawTab = previewTabsContainer.createEl('div', { cls: 'preview-tab', text: 'Raw' });
+        const diffTab = previewTabsContainer.createEl('div', { cls: 'preview-tab active', text: 'Diff' });
         const renderedTab = previewTabsContainer.createEl('div', { cls: 'preview-tab', text: 'Rendered' });
 
         // Content container that holds all views

@@ -17,7 +17,7 @@ build: ## Build the plugin using
 
 
 .PHONY: build-install
-build-install: ## Installs in location: make build-install DEST=/Users/griffnb/lexis/.obsidian/plugins/claude-code
+build-install: ## Installs in location: make build-install DEST=/home/riven/obsidian/Default/.obsidian/plugins/claude-code-integration
 	@if [ -z "$(DEST)" ]; then \
 		echo "Error: Please specify DEST variable, e.g., make build-install DEST=/path/to/folder"; \
 		exit 1; \
@@ -36,7 +36,7 @@ clean: ## Clean build artifacts
 
 
 .PHONY: setup-plugin
-setup-plugin: ## Setup a symlink to the build folder make setup-plugin DEST=/Users/griffnb/lexis/.obsidian/plugins/claude-code
+setup-plugin: ## Setup a symlink to the build folder make setup-plugin DEST=/home/riven/obsidian/Default/.obsidian/plugins/claude-code-integration
 	@if [ -z "$(DEST)" ]; then \
 		echo "Error: Please specify DEST variable, e.g., make build-install DEST=/path/to/folder"; \
 		exit 1; \
@@ -44,7 +44,7 @@ setup-plugin: ## Setup a symlink to the build folder make setup-plugin DEST=/Use
 	@ln -s $(DEST) build
 
 .PHONY: setup-hotreload
-setup-hotreload: ## Setup a symlink to the build folder make setup-hotreload DEST=/Users/griffnb/lexis/.obsidian/plugins/hotreload
+setup-hotreload: ## Setup a symlink to the build folder make setup-hotreload DEST=/home/riven/obsidian/Default/.obsidian/plugins/claude-code-integration
 	@if [ -z "$(DEST)" ]; then \
 		echo "Error: Please specify DEST variable, e.g., make build-install DEST=/path/to/folder"; \
 		exit 1; \

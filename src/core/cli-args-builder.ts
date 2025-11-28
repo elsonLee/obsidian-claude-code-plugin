@@ -40,6 +40,9 @@ export class CliArgsBuilder {
         // Permission mode
         if (config.settings.enablePermissionlessMode || config.bypassPermissions) {
             args.push('--permission-mode', 'bypassPermissions');
+        }else{
+           args.push('--permission-mode', 'acceptEdits');
+
         }
 
         // Vault access

@@ -28,6 +28,9 @@ export class AgentActivityTracker {
     addStep(step: AgentStep): void {
         if (!this.agentStepsContainer || !this.agentActivitySection) return;
 
+        // Show the activity section when adding steps
+        this.agentActivitySection.style.display = 'block';
+
         // Show the agent container
         if (this.agentContainer) {
             this.agentContainer.removeClass('is-hidden');
@@ -150,7 +153,12 @@ export class AgentActivityTracker {
         }
         this.agentSteps.clear();
 
-        // Note: We don't hide the container here because the todo list might still be visible
+        // Hide the activity column when empty
+        if (this.agentActivitySection) {
+            this.agentActivitySection.style.display = 'none';
+        }
+
+        // Note: We don't hide the main container here because the todo list might still be visible
     }
 
     /**

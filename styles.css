@@ -1077,8 +1077,8 @@
 
 /* Diff View */
 .claude-code-preview-diff {
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: 500px;
+    overflow: auto;
     border: 1px solid var(--background-modifier-border);
     border-radius: 4px;
     background-color: var(--background-primary);
@@ -1086,60 +1086,163 @@
     font-size: 12px;
 }
 
-.claude-code-diff-container {
+/* Side-by-side diff container (IntelliJ-style) */
+.claude-code-diff-side-by-side {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Header with "Original" and "Modified" labels */
+.diff-header {
+    display: flex;
+    background-color: var(--background-secondary);
+    border-bottom: 2px solid var(--background-modifier-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 600;
+}
+
+.diff-header-title {
+    padding: 8px 12px;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Content area */
+.diff-content {
     display: flex;
     flex-direction: column;
 }
 
-.diff-line {
+/* Each row in the diff */
+.diff-row {
+    display: flex;
+    min-height: 22px;
+    border-bottom: 1px solid var(--background-modifier-border-hover);
+}
+
+.diff-row:hover {
+    background-color: var(--background-secondary-alt);
+}
+
+/* Columns (left = original, right = modified) */
+.diff-column {
+    flex: 1;
     display: flex;
     align-items: stretch;
-    min-height: 20px;
-    line-height: 20px;
+    min-width: 0;
 }
 
+.diff-column-left {
+    border-right: 2px solid var(--background-modifier-border);
+}
+
+/* Line numbers */
 .diff-line-number {
     display: inline-block;
-    width: 40px;
+    width: 45px;
     padding: 0 8px;
     text-align: right;
-    color: var(--text-muted);
+    color: var(--text-faint);
     background-color: var(--background-secondary);
-    border-right: 1px solid var(--background-modifier-border);
     user-select: none;
     flex-shrink: 0;
+    font-size: 11px;
+    align-self: flex-start; /* Keep line number at top when content wraps */
 }
 
-.diff-content {
+/* Line content */
+.diff-line-content {
     flex: 1;
-    padding: 0 8px;
-    white-space: pre-wrap;
-    word-break: break-all;
+    padding: 0 12px;
+    white-space: pre-wrap; /* Wrap long lines */
+    word-break: break-word; /* Break long words if needed */
+    overflow-wrap: break-word;
+    min-width: 0;
+    line-height: 1.5;
 }
 
+/* Empty side (for delete/insert rows) */
+.diff-empty {
+    background-color: var(--background-secondary-alt);
+}
+
+.diff-empty .diff-line-content {
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        var(--background-modifier-border) 10px,
+        var(--background-modifier-border) 11px
+    );
+}
+
+/* Equal lines (unchanged) */
 .diff-equal {
     background-color: var(--background-primary);
 }
 
-.diff-delete {
+/* Delete lines (red background on left) */
+.diff-delete .diff-column-left {
     background-color: rgba(255, 100, 100, 0.15);
 }
 
-.diff-delete .diff-content {
+.diff-delete .diff-column-left .diff-line-number {
+    background-color: rgba(255, 100, 100, 0.25);
+    color: var(--text-error);
+    font-weight: 600;
+}
+
+.diff-delete .diff-column-left .diff-line-content {
     color: var(--text-error);
 }
 
-.diff-insert {
+/* Insert lines (green background on right) */
+.diff-insert .diff-column-right {
     background-color: rgba(100, 255, 100, 0.15);
 }
 
-.diff-insert .diff-content {
-    color: var(--text-success);
+.diff-insert .diff-column-right .diff-line-number {
+    background-color: rgba(100, 255, 100, 0.25);
+    color: var(--color-green);
+    font-weight: 600;
 }
 
-.diff-delete .diff-line-number,
-.diff-insert .diff-line-number {
+.diff-insert .diff-column-right .diff-line-content {
+    color: var(--color-green);
+}
+
+/* Modify lines (both sides highlighted) */
+.diff-modify .diff-column-left {
+    background-color: rgba(255, 200, 100, 0.15);
+}
+
+.diff-modify .diff-column-left .diff-line-number {
+    background-color: rgba(255, 200, 100, 0.25);
+    color: var(--text-warning);
     font-weight: 600;
+}
+
+.diff-modify .diff-column-right {
+    background-color: rgba(100, 200, 255, 0.15);
+}
+
+.diff-modify .diff-column-right .diff-line-number {
+    background-color: rgba(100, 200, 255, 0.25);
+    color: var(--text-accent);
+    font-weight: 600;
+}
+
+.diff-modify .diff-column-left .diff-line-content {
+    color: var(--text-warning);
+}
+
+.diff-modify .diff-column-right .diff-line-content {
+    color: var(--text-accent);
 }
 
 /* Scrollbar styling */

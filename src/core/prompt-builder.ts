@@ -43,16 +43,13 @@ export class PromptBuilder {
         // Add context-aware instructions
         prompt += this.buildContextInstructions(request, sessionDir, allowVaultAccess);
 
-        // Add note content
-        const contentToEdit = request.selectedText || request.noteContent;
-        prompt += `Current note content:\n---\n${contentToEdit}\n---\n\n`;
+        // Tell Claude about the note.md file it should edit
+        prompt += `EDITING INSTRUCTIONS:\n`;
+        prompt += `- The note content is in: ${path.join(sessionDir, 'note.md')}\n`;
+        prompt += `- Use the Edit or Write tool to modify the file\n`;
+        prompt += `- After you make changes, confirm what you did\n\n`;
+
         prompt += `USER REQUEST: ${request.userPrompt}\n\n`;
-
-        // Add agent mode instructions
-        prompt += this.buildAgentInstructions();
-
-        // Add output format instructions
-        prompt += this.buildOutputFormatInstructions();
 
         return prompt;
     }
@@ -121,50 +118,8 @@ export class PromptBuilder {
     private static buildAgentInstructions(): string {
         return `You are a powerful AI assistant with access to tools. USE THEM ACTIVELY.\n\n` +
             `IMPORTANT - INTERPRET USER INTENT:\n` +
-            `1. If the user is asking a QUESTION or requesting ANALYSIS (e.g., "what do you think?", "should I improve?", "explain this", "investigate"), provide your answer directly WITHOUT the ---FINAL-CONTENT--- separator. Just respond conversationally.\n` +
-            `2. If the user wants to EDIT/MODIFY the note (e.g., "add a summary", "fix formatting", "create a diagram"), use the format below with the separator.\n\n`;
+            `1. If the user is asking a QUESTION or requesting ANALYSIS, simply respond conversationally.\n` +
+            `2. If the user wants to EDIT/MODIFY the note, use the Edit or Write tool to modify note.md, then explain what you changed.\n\n`;
     }
 
-    /**
-     * Build output format instructions
-     */
-    private static buildOutputFormatInstructions(): string {
-        let instructions = `FOR EDIT REQUESTS - CRITICAL OUTPUT FORMAT:\n\n`;
-
-        instructions += `OUTPUT STRUCTURE (MUST FOLLOW EXACTLY):\n`;
-        instructions += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-        instructions += `[Optional: 1-2 sentences explaining what you're doing]\n`;
-        instructions += `---FINAL-CONTENT---\n`;
-        instructions += `[The complete markdown content for the file]\n`;
-        instructions += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-        instructions += `ABSOLUTE RULES FOR EDITS:\n`;
-        instructions += `❌ DO NOT write markdown/code BEFORE the separator\n`;
-        instructions += `❌ DO NOT wrap content after separator in \\\`\\\`\\\`markdown blocks\n`;
-        instructions += `❌ DO NOT add explanations AFTER the file content\n`;
-        instructions += `❌ DO NOT start responses with a single period "." or dashes "---"\n`;
-        instructions += `❌ DO NOT start the file content after ---FINAL-CONTENT--- with "." or "---"\n`;
-        instructions += `✅ DO put ALL file content (titles, text, code blocks) AFTER the separator\n`;
-        instructions += `✅ DO keep any explanation BEFORE the separator brief (1-2 sentences max)\n`;
-        instructions += `✅ DO start your response with actual text (a letter or word), never with punctuation alone\n\n`;
-
-        instructions += `CORRECT EDIT EXAMPLE:\n`;
-        instructions += `I'll create a payment system diagram.\n`;
-        instructions += `---FINAL-CONTENT---\n`;
-        instructions += `# Payment System\n\n`;
-        instructions += `\\\`\\\`\\\`plantuml\n`;
-        instructions += `@startuml\n`;
-        instructions += `A -> B: Payment\n`;
-        instructions += `@enduml\n`;
-        instructions += `\\\`\\\`\\\`\n\n`;
-
-        instructions += `CORRECT QUESTION EXAMPLE:\n`;
-        instructions += `This note looks well-structured! Here are some suggestions:\n`;
-        instructions += `1. Add more examples in section 2\n`;
-        instructions += `2. Consider adding a summary at the top\n`;
-        instructions += `3. The PlantUML diagram could include error handling flows\n`;
-        instructions += `(NO ---FINAL-CONTENT--- separator for questions/analysis)\n\n`;
-
-        return instructions;
-    }
 }

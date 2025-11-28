@@ -26,13 +26,9 @@ export class ClaudeCodeView extends ItemView {
     private currentResultStreamingElement: HTMLElement | null = null;
     private hitFinalContentMarker: boolean = false;
     private userHasScrolled: boolean = false;
-    private lastScrollHeight: number = 0;
     private lastRenderedText: string = ''; // Track what we've already rendered
     private previewArea: HTMLDivElement;
     private previewContentContainer: HTMLDivElement;
-    private previewTabsContainer: HTMLDivElement;
-    private applyButton: HTMLButtonElement;
-    private rejectButton: HTMLButtonElement;
     private selectedTextOnlyCheckbox: HTMLInputElement;
     private autoAcceptCheckbox: HTMLInputElement;
     private conversationalModeCheckbox: HTMLInputElement;
@@ -40,10 +36,7 @@ export class ClaudeCodeView extends ItemView {
     private currentNoteLabel: HTMLElement;
     private statusIndicator: HTMLElement;
     private statusText: HTMLSpanElement;
-    private interactivePromptSection: HTMLElement;
     private permissionApprovalSection: HTMLElement;
-    private approvePermissionButton: HTMLButtonElement;
-    private denyPermissionButton: HTMLButtonElement;
     private historyList: HTMLUListElement;
 
     // Managers and Renderers
@@ -190,7 +183,7 @@ export class ClaudeCodeView extends ItemView {
         this.promptInput.addEventListener('keydown', this.promptInputKeydownHandler);
 
         // Interactive prompt section
-        this.interactivePromptSection = UIBuilder.buildInteractivePromptSection(
+         UIBuilder.buildInteractivePromptSection(
             container,
             (response) => this.respondToPrompt(response)
         );
@@ -211,8 +204,6 @@ export class ClaudeCodeView extends ItemView {
             () => this.handleDenyPermission()
         );
         this.permissionApprovalSection = permissionElements.permissionApprovalSection;
-        this.approvePermissionButton = permissionElements.approvePermissionButton;
-        this.denyPermissionButton = permissionElements.denyPermissionButton;
 
         // Preview section (second - after result)
         const previewElements = UIBuilder.buildPreviewSection(
@@ -222,9 +213,6 @@ export class ClaudeCodeView extends ItemView {
         );
         this.previewArea = previewElements.previewArea;
         this.previewContentContainer = previewElements.previewContentContainer;
-        this.previewTabsContainer = previewElements.previewTabsContainer;
-        this.applyButton = previewElements.applyButton;
-        this.rejectButton = previewElements.rejectButton;
 
         // Combined agent section (plan + activity) (third)
         UIBuilder.buildAgentSection(container);
@@ -846,12 +834,13 @@ export class ClaudeCodeView extends ItemView {
         // Show the modified content in a code block (Raw tab)
         const previewContent = this.previewArea.createEl('pre', { cls: 'claude-code-preview-content' });
         previewContent.createEl('code', { text: modifiedContent });
+        this.previewArea.style.display = 'none'; // Hidden by default, Diff tab is active
 
-        // Create diff view
+        // Create diff view (shown by default)
         const diffArea = this.previewContentContainer.createEl('div', {
             cls: 'claude-code-preview-diff'
         });
-        diffArea.style.display = 'none';
+        diffArea.style.display = 'block'; // Show by default
         diffArea.innerHTML = this.generateDiff(originalContent, modifiedContent);
 
         // Create rendered markdown view
@@ -1064,8 +1053,8 @@ export class ClaudeCodeView extends ItemView {
         // Check if we already have a plain text container
         const lastChild = this.currentResultStreamingElement.lastChild;
         if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
-            // Append to existing text node
-            lastChild.textContent += text;
+            // REPLACE existing text node (remainingText already contains the full text)
+            lastChild.textContent = text;
         } else {
             // Create new text node
             const textNode = document.createTextNode(text);
@@ -1182,7 +1171,6 @@ export class ClaudeCodeView extends ItemView {
      */
     private resetScrollState(): void {
         this.userHasScrolled = false;
-        this.lastScrollHeight = 0;
         this.lastRenderedText = ''; // Reset incremental rendering state
     }
 
@@ -1192,6 +1180,36 @@ export class ClaudeCodeView extends ItemView {
     private finishResultStreaming(): void {
         if (this.currentResultStreamingElement) {
             console.log('[Finish Result Streaming] Cleaning up streaming state');
+
+            // Get the full accumulated text
+            const fullAccumulatedText = (this.currentResultStreamingElement as any).fullText || '';
+
+            // Check if there's any text we haven't rendered yet
+            if (fullAccumulatedText && fullAccumulatedText.length > this.lastRenderedText.length) {
+                const unrenderedText = fullAccumulatedText.substring(this.lastRenderedText.length);
+                if (unrenderedText.trim()) {
+                    console.log('[Finish Result Streaming] Rendering final unrendered text:', unrenderedText.substring(0, 50));
+                    // Remove any plain text node
+                    const lastChild = this.currentResultStreamingElement.lastChild;
+                    if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
+                        this.currentResultStreamingElement.removeChild(lastChild);
+                    }
+                    // Render the unrendered portion as a markdown block
+                    this.appendMarkdownBlock(unrenderedText);
+                }
+            } else {
+                // No unrendered text, just convert any remaining plain text to a markdown block
+                const lastChild = this.currentResultStreamingElement.lastChild;
+                if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
+                    const remainingText = lastChild.textContent || '';
+                    if (remainingText.trim()) {
+                        // Remove the plain text node
+                        this.currentResultStreamingElement.removeChild(lastChild);
+                        // Render it as a final markdown block
+                        this.appendMarkdownBlock(remainingText);
+                    }
+                }
+            }
 
             // Just update the CSS class - content is already rendered as markdown
             this.currentResultStreamingElement.removeClass('claude-code-result-streaming');
@@ -1534,11 +1552,17 @@ export class ClaudeCodeView extends ItemView {
     private updateHistoryDisplay(history: SessionHistoryItem[]): void {
         this.historyList.empty();
 
+        const historySection = document.getElementById('claude-code-history-section');
+
         if (history.length === 0) {
+            // Hide history section when empty
+            if (historySection) {
+                historySection.style.display = 'none';
+            }
             return;
         }
 
-        const historySection = document.getElementById('claude-code-history-section');
+        // Show history section when there's content
         if (historySection) {
             historySection.style.display = 'block';
         }

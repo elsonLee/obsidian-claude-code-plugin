@@ -73,57 +73,6 @@ export class ResponseParser {
     }
 
     /**
-     * Build response object from parsed output
-     *
-     * @param parsed Parsed output
-     * @param outputLines Original output lines
-     * @param isPermissionRequest Whether this is a permission request
-     * @returns Claude Code response
-     */
-    static buildResponse(
-        parsed: ParsedOutput,
-        outputLines: string[],
-        isPermissionRequest: boolean
-    ): ClaudeCodeResponse {
-        const fullText = parsed.assistantText;
-        const modifiedContent = ResponseContentExtractor.extractFinalContent(fullText).content;
-
-        // Check if this was a question/analysis (no content modification)
-        const isQuestionResponse = !modifiedContent && fullText.length > 0;
-
-        if (modifiedContent.trim()) {
-            // Successful edit with content changes
-            return {
-                success: true,
-                modifiedContent,
-                assistantMessage: fullText,
-                output: outputLines,
-                tokenUsage: parsed.tokenUsage,
-                isPermissionRequest
-            };
-        } else if (isQuestionResponse) {
-            // Question/analysis response - no file changes
-            return {
-                success: true,
-                modifiedContent: '',
-                assistantMessage: fullText,
-                output: outputLines,
-                tokenUsage: parsed.tokenUsage,
-                isPermissionRequest
-            };
-        } else {
-            // No content found
-            return {
-                success: false,
-                error: 'No markdown content found in response',
-                assistantMessage: fullText,
-                output: outputLines,
-                isPermissionRequest
-            };
-        }
-    }
-
-    /**
      * Build error response
      *
      * @param error Error message
