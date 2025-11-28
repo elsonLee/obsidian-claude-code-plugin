@@ -1,12 +1,12 @@
 {
   "name": "obsidian-claude-code-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Claude Code integration for Obsidian",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "keywords": [],
   "author": "",

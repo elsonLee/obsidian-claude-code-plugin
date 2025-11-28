@@ -153,12 +153,28 @@ export class ClaudeCodeRunner {
             this.sendOutput(`[DEBUG] HOME: ${process.env.HOME}\n`);
             this.sendOutput(`[DEBUG] Claude path: ${claudePath}\n`);
 
+            // Build custom environment variables from settings
+            const customEnvVars: Record<string, string> = {};
+            if (this.settings.anthropicBaseUrl) {
+                customEnvVars['ANTHROPIC_BASE_URL'] = this.settings.anthropicBaseUrl;
+            }
+            if (this.settings.anthropicAuthToken) {
+                customEnvVars['ANTHROPIC_AUTH_TOKEN'] = this.settings.anthropicAuthToken;
+            }
+            if (this.settings.anthropicModel) {
+                customEnvVars['ANTHROPIC_MODEL'] = this.settings.anthropicModel;
+            }
+            if (this.settings.anthropicSmallFastModel) {
+                customEnvVars['ANTHROPIC_SMALL_FAST_MODEL'] = this.settings.anthropicSmallFastModel;
+            }
+
             try {
                 this.currentProcess = ProcessSpawner.spawn({
                     claudePath,
                     args,
                     workingDir,
-                    onDebugOutput: (msg) => this.sendOutput(msg)
+                    onDebugOutput: (msg) => this.sendOutput(msg),
+                    customEnvVars: Object.keys(customEnvVars).length > 0 ? customEnvVars : undefined
                 });
                 this.sendOutput(`[DEBUG] Process spawned successfully, PID: ${this.currentProcess.pid}\n`);
             } catch (spawnError) {

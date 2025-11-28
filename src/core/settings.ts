@@ -14,6 +14,11 @@ export interface ClaudeCodeSettings {
     autoAcceptChanges: boolean;
     allowVaultAccess: boolean;
     enablePermissionlessMode: boolean;
+    // Custom API configuration (for alternative endpoints/proxies)
+    anthropicBaseUrl: string;
+    anthropicAuthToken: string;
+    anthropicModel: string;
+    anthropicSmallFastModel: string;
 }
 
 export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
@@ -26,7 +31,12 @@ export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
     timeoutSeconds: 300,
     autoAcceptChanges: false,
     allowVaultAccess: true,
-    enablePermissionlessMode: false
+    enablePermissionlessMode: false,
+    // Custom API configuration (empty = use default)
+    anthropicBaseUrl: '',
+    anthropicAuthToken: '',
+    anthropicModel: '',
+    anthropicSmallFastModel: ''
 };
 
 export class ClaudeCodeSettingTab extends PluginSettingTab {
@@ -191,6 +201,63 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                         this.plugin.settings.timeoutSeconds = num;
                         await this.plugin.saveSettings();
                     }
+                }));
+
+        // Custom API Configuration Section
+        containerEl.createEl('h3', { text: 'Custom API Configuration' });
+        containerEl.createEl('p', {
+            text: 'Configure custom API endpoints for regions where Claude is not directly available. Leave empty to use default settings.',
+            cls: 'setting-item-description'
+        });
+
+        // Anthropic Base URL
+        new Setting(containerEl)
+            .setName('API Base URL')
+            .setDesc('Custom API endpoint URL (e.g., https://api.kimi.com/coding/)')
+            .addText(text => text
+                .setPlaceholder('https://api.anthropic.com')
+                .setValue(this.plugin.settings.anthropicBaseUrl)
+                .onChange(async (value) => {
+                    this.plugin.settings.anthropicBaseUrl = value.trim();
+                    await this.plugin.saveSettings();
+                }));
+
+        // Anthropic Auth Token
+        new Setting(containerEl)
+            .setName('API Auth Token')
+            .setDesc('Custom authentication token for the API endpoint')
+            .addText(text => {
+                text.setPlaceholder('Enter your API token')
+                    .setValue(this.plugin.settings.anthropicAuthToken)
+                    .onChange(async (value) => {
+                        this.plugin.settings.anthropicAuthToken = value.trim();
+                        await this.plugin.saveSettings();
+                    });
+                text.inputEl.type = 'password';
+            });
+
+        // Anthropic Model
+        new Setting(containerEl)
+            .setName('Custom Model')
+            .setDesc('Custom model name to use (e.g., kimi-for-coding). Overrides the Model dropdown above.')
+            .addText(text => text
+                .setPlaceholder('claude-sonnet-4-20250514')
+                .setValue(this.plugin.settings.anthropicModel)
+                .onChange(async (value) => {
+                    this.plugin.settings.anthropicModel = value.trim();
+                    await this.plugin.saveSettings();
+                }));
+
+        // Anthropic Small/Fast Model
+        new Setting(containerEl)
+            .setName('Custom Small/Fast Model')
+            .setDesc('Custom model name for fast operations (e.g., kimi-for-coding)')
+            .addText(text => text
+                .setPlaceholder('claude-haiku-3-5-20241022')
+                .setValue(this.plugin.settings.anthropicSmallFastModel)
+                .onChange(async (value) => {
+                    this.plugin.settings.anthropicSmallFastModel = value.trim();
+                    await this.plugin.saveSettings();
                 }));
     }
 

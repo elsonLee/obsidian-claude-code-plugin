@@ -10,6 +10,7 @@ export interface SpawnConfig {
     args: string[];
     workingDir: string;
     onDebugOutput?: (message: string) => void;
+    customEnvVars?: Record<string, string>;
 }
 
 /**
@@ -119,6 +120,26 @@ export class ProcessSpawner {
     static spawn(config: SpawnConfig): ChildProcess {
         // Get full shell environment (includes all your terminal env vars)
         const shellEnv = this.getShellEnvironment(config.onDebugOutput);
+
+        // Merge custom environment variables (these override shell env vars)
+        if (config.customEnvVars) {
+            const customVarCount = Object.keys(config.customEnvVars).filter(k => config.customEnvVars![k]).length;
+            if (customVarCount > 0 && config.onDebugOutput) {
+                config.onDebugOutput(`[DEBUG] Applying ${customVarCount} custom environment variables:\n`);
+            }
+            for (const [key, value] of Object.entries(config.customEnvVars)) {
+                if (value) {  // Only set non-empty values
+                    shellEnv[key] = value;
+                    if (config.onDebugOutput) {
+                        // Mask sensitive values
+                        const displayValue = (key.includes('KEY') || key.includes('TOKEN') || key.includes('SECRET'))
+                            ? `${value.substring(0, 8)}...`
+                            : value;
+                        config.onDebugOutput(`[DEBUG]   ${key}=${displayValue}\n`);
+                    }
+                }
+            }
+        }
 
         // Debug output: show loaded environment variables
         if (config.onDebugOutput) {
