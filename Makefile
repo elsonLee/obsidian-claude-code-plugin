@@ -69,7 +69,7 @@ release: ## Build and upload a new release (auto-increments patch version)
 	echo "Creating tag $$NEW_VERSION..."; \
 	git tag $$NEW_VERSION; \
 	echo "Pushing to remote..."; \
-	git push && git push --tags; \
+	git push -u origin HEAD && git push origin --tags; \
 	echo "Creating GitHub release $$NEW_VERSION..."; \
 	gh release create $$NEW_VERSION build/main.js manifest.json build/styles.css --title "$$NEW_VERSION" --generate-notes || \
 	gh release upload $$NEW_VERSION build/main.js manifest.json build/styles.css --clobber; \
