@@ -2,6 +2,28 @@ import { ClaudeCodeResponse } from './claude-code-runner';
 import { TokenUsage } from './types';
 
 /**
+ * Stream event structure from Claude Code CLI
+ */
+interface StreamEvent {
+    type: string;
+    event_type?: string;
+    delta?: {
+        type?: string;
+        text?: string;
+    };
+    message?: {
+        content?: Array<{
+            type: string;
+            text?: string;
+        }>;
+    };
+    usage?: {
+        input_tokens?: number;
+        output_tokens?: number;
+    };
+}
+
+/**
  * Parsed stream output from Claude Code
  */
 export interface ParsedOutput {
@@ -25,7 +47,7 @@ export class ResponseParser {
 
         for (const line of outputLines) {
             try {
-                const event = JSON.parse(line);
+                const event = JSON.parse(line) as StreamEvent;
 
                 // Collect text from streaming events (real-time deltas)
                 if (event.type === 'stream_event') {
@@ -57,7 +79,7 @@ export class ResponseParser {
                         };
                     }
                 }
-            } catch (e) {
+            } catch {
                 // Skip invalid JSON lines
             }
         }

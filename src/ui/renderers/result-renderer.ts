@@ -142,7 +142,8 @@ export class ResultRenderer {
         if (parsed.directAnswer) {
             const answerBox = container.createEl('div', { cls: 'result-direct-answer' });
             const answerLabel = answerBox.createEl('div', { cls: 'result-direct-answer-label' });
-            answerLabel.createEl('span', { text: '💡 Direct answer' });
+            answerLabel.createEl('span', { text: '💡' });
+            answerLabel.createEl('span', { text: ' Direct answer' });
 
             const answerContent = answerBox.createEl('div', { cls: 'result-direct-answer-content' });
             renderMarkdown(parsed.directAnswer, answerContent);

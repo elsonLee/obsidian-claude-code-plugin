@@ -17,7 +17,7 @@ export default class ClaudeCodePlugin extends Plugin {
 
         // Add ribbon icon
         this.addRibbonIcon('bot', 'Open Claude Code', () => {
-            this.activateView();
+            void this.activateView();
         });
 
         // Add command to open Claude Code view
@@ -25,7 +25,7 @@ export default class ClaudeCodePlugin extends Plugin {
             id: 'open-claude-code-view',
             name: 'Open Claude Code panel',
             callback: () => {
-                this.activateView();
+                void this.activateView();
             }
         });
 
@@ -66,7 +66,7 @@ export default class ClaudeCodePlugin extends Plugin {
     }
 
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as ClaudeCodeSettings | undefined);
     }
 
     async saveSettings() {
@@ -97,7 +97,7 @@ export default class ClaudeCodePlugin extends Plugin {
 
         // Reveal the leaf in case it's in a collapsed sidebar
         if (leaf) {
-            workspace.revealLeaf(leaf);
+            void workspace.revealLeaf(leaf);
         }
     }
 }

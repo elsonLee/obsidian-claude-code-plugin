@@ -42,7 +42,7 @@ export class OutputRenderer {
         if (isMarkdown) {
             line.classList.add('markdown-rendered');
             try {
-                MarkdownRenderer.render(this.app, text, line, this.notePath, this.component);
+                void MarkdownRenderer.render(this.app, text, line, this.notePath, this.component);
             } catch (error) {
                 console.error('[MARKDOWN RENDER ERROR]', error);
                 line.textContent = text;

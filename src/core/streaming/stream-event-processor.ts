@@ -26,7 +26,7 @@ interface StreamEventData {
             name?: string;
             input?: Record<string, unknown>;
             tool_use_id?: string;
-            content?: string | unknown;
+            content?: unknown;
         }>;
     };
     tool_name?: string;
@@ -257,7 +257,7 @@ export class StreamEventProcessor {
         for (const field of displayFields) {
             const value = event[field];
             if (value !== undefined) {
-                sendOutput(`   ${field}: ${value}\n`);
+                sendOutput(`   ${field}: ${String(value)}\n`);
             }
         }
 

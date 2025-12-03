@@ -214,14 +214,14 @@ export class ClaudeCodeRunner {
                     if (!line.trim()) continue;
 
                     try {
-                        const event = JSON.parse(line);
+                        const event = JSON.parse(line) as Record<string, unknown>;
                         //console.log(event);
-                        
+
                         output.push(line);
 
                         // Process the event (will handle streaming output)
                         this.handleStreamEvent(event);
-                    } catch (e) {
+                    } catch {
                         this.sendOutput(`[raw] ${line}`);
                     }
                 }

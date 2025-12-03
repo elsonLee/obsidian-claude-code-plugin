@@ -141,7 +141,7 @@ export class AgentActivityTracker {
      */
     clear(): void {
         // Stop all timers
-        for (const [key, timer] of this.stepTimers.entries()) {
+        for (const timer of this.stepTimers.values()) {
             clearInterval(timer);
         }
         this.stepTimers.clear();

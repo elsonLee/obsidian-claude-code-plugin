@@ -74,7 +74,7 @@ export class UIBuilder {
         // Conversational mode checkbox
         const conversationalLabel = optionsDiv.createEl('label', { cls: 'claude-code-checkbox-label' });
         const conversationalModeCheckbox = conversationalLabel.createEl('input', { type: 'checkbox' });
-        conversationalLabel.appendText(' 💬 Conversational mode (no file edits)');
+        conversationalLabel.appendText(' 💬 conversational mode (no file edits)');
         conversationalLabel.title = 'Chat with Claude without modifying any files';
 
         // Selected text only checkbox
@@ -102,7 +102,7 @@ export class UIBuilder {
 
         const runButton = buttonContainer.createEl('button', {
             cls: 'mod-cta',
-            text: 'Run Claude code'
+            text: 'Run Claude Code'
         });
         runButton.addEventListener('click', onRun);
 
@@ -141,9 +141,9 @@ export class UIBuilder {
         // Hidden by default - only shown when there's a plan
 
         const planHeader = planColumn.createEl('div', { cls: 'claude-code-agent-column-header' });
-        planHeader.createEl('span', { text: '📋 Plan' });
+        planHeader.createEl('span', { text: '📋 plan' });
 
-        const todoList = planColumn.createEl('div', {
+        planColumn.createEl('div', {
             cls: 'claude-code-todo-list claude-code-hidden',
             attr: { id: 'claude-code-todo-list' }
         });
@@ -211,12 +211,12 @@ export class UIBuilder {
 
         const yesButton = promptButtons.createEl('button', {
             cls: 'mod-cta',
-            text: '✓ Yes / Sí'
+            text: '✓ yes / sí'
         });
         yesButton.addEventListener('click', () => onRespond('yes'));
 
         const noButton = promptButtons.createEl('button', {
-            text: '✗ No'
+            text: '✗ no'
         });
         noButton.addEventListener('click', () => onRespond('no'));
 
@@ -255,7 +255,7 @@ export class UIBuilder {
 
         permissionApprovalSection.createEl('div', {
             cls: 'permission-approval-header',
-            text: '🔐 Permission required'
+            text: '🔐 permission required'
         });
 
         permissionApprovalSection.createEl('div', {
@@ -269,13 +269,13 @@ export class UIBuilder {
 
         const approvePermissionButton = approvalButtons.createEl('button', {
             cls: 'mod-cta',
-            text: '✓ Approve & continue'
+            text: '✓ approve & continue'
         });
         approvePermissionButton.addEventListener('click', onApprove);
 
         const denyPermissionButton = approvalButtons.createEl('button', {
             cls: 'mod-warning',
-            text: '✗ Deny'
+            text: '✗ deny'
         });
         denyPermissionButton.addEventListener('click', onDeny);
 
@@ -397,13 +397,13 @@ export class UIBuilder {
 
         const applyButton = previewButtons.createEl('button', {
             cls: 'mod-cta',
-            text: '✓ Apply changes'
+            text: '✓ apply changes'
         });
         applyButton.addEventListener('click', onApply);
 
         const rejectButton = previewButtons.createEl('button', {
             cls: 'mod-warning',
-            text: '✗ Reject'
+            text: '✗ reject'
         });
         rejectButton.addEventListener('click', onReject);
 

@@ -46,9 +46,10 @@ Integrate Claude Code AI assistant directly into Obsidian for intelligent note e
 
 ### Manual Installation
 1. Download the latest release from [GitHub Releases](https://github.com/deivid11/obsidian-claude-code-plugin/releases)
-2. Extract the main.js file to your vault's `.obsidian/plugins/claude-code-integration/` folder
-3. Reload Obsidian
-4. Enable the plugin in Settings → Community Plugins
+2. Create a folder: `.obsidian/plugins/claude-code-integration/` in your vault
+3. Extract `main.js`, `manifest.json`, and `styles.css` to that folder
+4. Reload Obsidian
+5. Enable the plugin in Settings → Community Plugins
 
 ## Prerequisites
 
@@ -94,9 +95,10 @@ Open Settings → Claude Code Integration to configure:
 
 #### Model Settings
 - **Default Model**: Choose your preferred Claude model
-  - `claude-sonnet-4` (default) - Balanced performance and speed
-  - `claude-opus-4` - Most capable, slower
-  - `claude-haiku-4` - Fastest, good for simple tasks
+  - `sonnet` (default) - Claude Sonnet 4 - Balanced performance and speed
+  - `opus` - Claude Opus 4.5 - Most capable, best for complex tasks
+  - `haiku` - Claude Haiku - Fastest, good for simple tasks
+- **Custom Model**: You can also specify a custom model name (e.g., `claude-sonnet-4-5-20250929`) in the advanced settings
 
 #### Permission Settings
 - **Enable Permissionless Mode**: Allow Claude to operate autonomously

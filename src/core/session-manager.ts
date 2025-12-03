@@ -88,7 +88,7 @@ export class SessionManager {
             // Load existing history
             let history: Array<{role: string, content: string, timestamp: string}> = [];
             if (fs.existsSync(historyFile)) {
-                history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
+                history = JSON.parse(fs.readFileSync(historyFile, 'utf8')) as Array<{role: string, content: string, timestamp: string}>;
             }
 
             // Add this exchange

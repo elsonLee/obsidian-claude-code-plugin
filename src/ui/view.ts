@@ -5,8 +5,19 @@
 import { ItemView, WorkspaceLeaf, MarkdownView, Notice, MarkdownRenderer, Editor, FileSystemAdapter } from 'obsidian';
 import ClaudeCodePlugin from '../main';
 import { ClaudeCodeRequest } from '../core/claude-code-runner';
-import { VIEW_TYPE_CLAUDE_CODE, SessionHistoryItem, AgentStep, NoteContext } from '../core/types';
+import { VIEW_TYPE_CLAUDE_CODE, SessionHistoryItem, NoteContext } from '../core/types';
 import { UIBuilder } from './ui-builder';
+
+/** Interface for streaming element with accumulated text */
+interface StreamingElementData {
+    accumulatedText: string;
+    fullText?: string;
+}
+
+/** Interface for parsed tool input with todos */
+interface TodoToolInput {
+    todos?: Array<{ content: string; status: string; activeForm: string }>;
+}
 import { OutputRenderer } from './output-renderer';
 import { AgentActivityTracker } from './agent-activity-tracker';
 import { NoteContextManager } from '../managers/note-context-manager';
@@ -104,7 +115,7 @@ export class ClaudeCodeView extends ItemView {
         // Load persisted contexts from disk
         const vaultPath = (this.app.vault.adapter as FileSystemAdapter).getBasePath();
         if (vaultPath) {
-            await this.contextManager.loadContexts(vaultPath);
+            this.contextManager.loadContexts(vaultPath);
         }
 
         // Get current active note
@@ -243,7 +254,7 @@ export class ClaudeCodeView extends ItemView {
             const fileName = this.currentNotePath.split('/').pop() || 'Unknown';
             this.currentNoteLabel.textContent = `📝 ${fileName}`;
         } else {
-            this.currentNoteLabel.textContent = '📝 No note selected';
+            this.currentNoteLabel.textContent = '📝 no note selected';
         }
     }
 
@@ -347,7 +358,7 @@ export class ClaudeCodeView extends ItemView {
             // Get active file
             const file = this.app.workspace.getActiveFile();
             if (!file) {
-                new Notice('No active note found. Please open a markdown note first.');
+                new Notice('No active note found, please open a Markdown note first');
                 return;
             }
 
@@ -370,7 +381,7 @@ export class ClaudeCodeView extends ItemView {
             }
 
             if (!activeView || !activeView.editor) {
-                new Notice('No markdown editor found. Please make sure you have a note open.');
+                new Notice('No Markdown editor found, please make sure you have a note open');
                 return;
             }
 
@@ -448,7 +459,7 @@ export class ClaudeCodeView extends ItemView {
 
             // Update UI
             this.runButton.disabled = false;
-            this.runButton.textContent = 'Run Claude code';
+            this.runButton.textContent = 'Run Claude Code';
             this.cancelButton.addClass('claude-code-hidden');
             this.cancelButton.removeClass('claude-code-inline-visible');
 
@@ -469,7 +480,7 @@ export class ClaudeCodeView extends ItemView {
 
             // Save context with error handling
             try {
-                await this.contextManager.saveContext(file.path, vaultPath);
+                this.contextManager.saveContext(file.path, vaultPath);
             } catch (error) {
                 console.error('Failed to save context:', error);
             }
@@ -486,7 +497,7 @@ export class ClaudeCodeView extends ItemView {
                     if (this.currentNotePath === runNotePath) {
                         this.hideStatus();
                     }
-                    new Notice('✓ Changes applied automatically');
+                    new Notice('✓ changes applied automatically');
                 } else {
                     this.showPreview(response.modifiedContent);
                 }
@@ -711,7 +722,7 @@ export class ClaudeCodeView extends ItemView {
                 console.debug('[Parse Todos] Trimmed JSON length:', jsonStr.length);
                 console.debug('[Parse Todos] First char:', jsonStr[0], 'Last char:', jsonStr[jsonStr.length - 1]);
 
-                const toolInput = JSON.parse(jsonStr);
+                const toolInput = JSON.parse(jsonStr) as TodoToolInput;
 
                 if (toolInput.todos && Array.isArray(toolInput.todos)) {
                     console.debug('[Parse Todos] Found todos count:', toolInput.todos.length);
@@ -719,7 +730,7 @@ export class ClaudeCodeView extends ItemView {
                     this.updateTodoList(toolInput.todos);
                 } else {
                     console.debug('[Parse Todos] No todos array found in parsed JSON');
-                    console.debug('[Parse Todos] Parsed object keys:', Object.keys(toolInput));
+                    console.debug('[Parse Todos] Parsed object keys:', Object.keys(toolInput as object));
                 }
             } catch (error) {
                 console.error('[Parse Todos] Failed to parse todos JSON:', error);
@@ -864,7 +875,7 @@ export class ClaudeCodeView extends ItemView {
         });
 
         // Render the markdown
-        MarkdownRenderer.render(
+        void MarkdownRenderer.render(
             this.app,
             modifiedContent,
             renderedArea,
@@ -917,11 +928,11 @@ export class ClaudeCodeView extends ItemView {
                 cls: 'claude-code-result-streaming markdown-rendered'
             });
             // Store accumulated text separately for markdown rendering
-            (this.currentResultStreamingElement as any).accumulatedText = '';
+            (this.currentResultStreamingElement as unknown as StreamingElementData).accumulatedText = '';
         }
 
         // Get accumulated text
-        let accumulatedText = (this.currentResultStreamingElement as any).accumulatedText || '';
+        const accumulatedText = (this.currentResultStreamingElement as unknown as StreamingElementData).accumulatedText || '';
 
         // Check if we've already encountered FINAL-CONTENT marker in the existing text
         if (accumulatedText.includes('---FINAL-CONTENT---')) {
@@ -939,7 +950,7 @@ export class ClaudeCodeView extends ItemView {
             const textBeforeMarker = combinedText.substring(0, finalContentIndex);
 
             // Update accumulated text and render
-            (this.currentResultStreamingElement as any).accumulatedText = textBeforeMarker;
+            (this.currentResultStreamingElement as unknown as StreamingElementData).accumulatedText = textBeforeMarker;
             this.renderStreamingMarkdown(textBeforeMarker);
 
             console.debug('[Append To Result] Hit FINAL-CONTENT marker, setting flag');
@@ -948,7 +959,7 @@ export class ClaudeCodeView extends ItemView {
         }
 
         // Normal case: add the full chunk and re-render markdown
-        (this.currentResultStreamingElement as any).accumulatedText = combinedText;
+        (this.currentResultStreamingElement as unknown as StreamingElementData).accumulatedText = combinedText;
         this.renderStreamingMarkdown(combinedText);
 
         console.debug('[Append To Result] Appended chunk, accumulated length:', combinedText.length);
@@ -1044,18 +1055,16 @@ export class ClaudeCodeView extends ItemView {
         const blockContainer = document.createElement('div');
         blockContainer.addClass('markdown-block');
 
-        try {
-            MarkdownRenderer.render(
-                this.app,
-                blockText,
-                blockContainer,
-                this.currentNotePath,
-                this
-            );
-        } catch (e) {
+        void MarkdownRenderer.render(
+            this.app,
+            blockText,
+            blockContainer,
+            this.currentNotePath,
+            this
+        ).catch((e: unknown) => {
             console.error('[Append Markdown Block] Error:', e);
             blockContainer.textContent = blockText;
-        }
+        });
 
         // Append the block
         this.currentResultStreamingElement.appendChild(blockContainer);
@@ -1141,18 +1150,16 @@ export class ClaudeCodeView extends ItemView {
         });
 
         // Render as markdown
-        try {
-            MarkdownRenderer.render(
-                this.app,
-                filteredText,
-                contentDiv,
-                this.currentNotePath,
-                this
-            );
-        } catch (e) {
+        void MarkdownRenderer.render(
+            this.app,
+            filteredText,
+            contentDiv,
+            this.currentNotePath,
+            this
+        ).catch((e: unknown) => {
             console.error('[Show Result Markdown] Render error:', e);
             contentDiv.textContent = filteredText;
-        }
+        });
 
         // Auto-scroll to bottom
         this.resultArea.scrollTop = this.resultArea.scrollHeight;
@@ -1202,7 +1209,7 @@ export class ClaudeCodeView extends ItemView {
             console.debug('[Finish Result Streaming] Cleaning up streaming state');
 
             // Get the full accumulated text
-            const fullAccumulatedText = (this.currentResultStreamingElement as any).fullText || '';
+            const fullAccumulatedText = (this.currentResultStreamingElement as unknown as StreamingElementData).fullText || '';
 
             // Check if there's any text we haven't rendered yet
             if (fullAccumulatedText && fullAccumulatedText.length > this.lastRenderedText.length) {
@@ -1255,7 +1262,7 @@ export class ClaudeCodeView extends ItemView {
         }
 
         // Render as markdown
-        MarkdownRenderer.render(
+        void MarkdownRenderer.render(
             this.app,
             filteredMessage,
             this.resultArea,
@@ -1347,7 +1354,7 @@ export class ClaudeCodeView extends ItemView {
         }
 
         if (!activeView || !activeView.editor) {
-            new Notice('No markdown editor found');
+            new Notice('No Markdown editor found');
             return;
         }
 
@@ -1419,7 +1426,7 @@ export class ClaudeCodeView extends ItemView {
             this.updateHistoryDisplay(context.history);
 
             const vaultPath = (this.app.vault.adapter as FileSystemAdapter).getBasePath();
-            await this.contextManager.saveContext(file.path, vaultPath);
+            this.contextManager.saveContext(file.path, vaultPath);
 
             if (response.modifiedContent && response.modifiedContent.trim()) {
                 if (this.autoAcceptCheckbox.checked) {
@@ -1430,7 +1437,7 @@ export class ClaudeCodeView extends ItemView {
                     if (this.currentNotePath === runNotePath) {
                         this.hideStatus();
                     }
-                    new Notice('✓ Changes applied automatically');
+                    new Notice('✓ changes applied automatically');
                 } else {
                     this.showPreview(response.modifiedContent);
                 }
@@ -1472,7 +1479,7 @@ export class ClaudeCodeView extends ItemView {
         const context = this.getCurrentContext();
 
         if (!context.currentResponse?.modifiedContent) {
-            new Notice('⚠ No changes to apply');
+            new Notice('⚠ no changes to apply');
             console.error('[Apply Changes] No modified content found in context');
             return;
         }
@@ -1480,7 +1487,7 @@ export class ClaudeCodeView extends ItemView {
         // Get the active file
         const file = this.app.workspace.getActiveFile();
         if (!file) {
-            new Notice('⚠ No active file');
+            new Notice('⚠ no active file');
             console.error('[Apply Changes] No active file found');
             return;
         }
@@ -1503,7 +1510,7 @@ export class ClaudeCodeView extends ItemView {
         }
 
         if (!targetView || !targetView.editor) {
-            new Notice('⚠ No markdown editor found');
+            new Notice('⚠ no Markdown editor found');
             console.error('[Apply Changes] No markdown view or editor found');
             return;
         }
@@ -1511,9 +1518,9 @@ export class ClaudeCodeView extends ItemView {
         try {
             this.applyChangesToEditor(context.currentResponse.modifiedContent, targetView.editor);
             this.hidePreview();
-            new Notice('✓ Changes applied successfully');
+            new Notice('✓ changes applied successfully');
         } catch (error) {
-            new Notice('✗ Failed to apply changes');
+            new Notice('✗ failed to apply changes');
             console.error('[Apply Changes] Error:', error);
         }
     }
@@ -1789,7 +1796,7 @@ export class ClaudeCodeView extends ItemView {
         const vaultPath = (this.app.vault.adapter as FileSystemAdapter).getBasePath();
         if (vaultPath) {
             try {
-                await this.contextManager.saveAllContexts(vaultPath);
+                this.contextManager.saveAllContexts(vaultPath);
             } catch (error) {
                 console.error('Failed to save contexts on close:', error);
             }

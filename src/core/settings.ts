@@ -11,7 +11,6 @@ export interface ClaudeCodeSettings {
     modelAlias: 'sonnet' | 'opus' | 'haiku' | '';
     customSystemPrompt: string;
     preserveCursorPosition: boolean;
-    confirmBeforeApplying: boolean;
     timeoutSeconds: number;
     autoAcceptChanges: boolean;
     allowVaultAccess: boolean;
@@ -29,7 +28,6 @@ export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
     modelAlias: '',
     customSystemPrompt: '',
     preserveCursorPosition: true,
-    confirmBeforeApplying: true,
     timeoutSeconds: 300,
     autoAcceptChanges: false,
     allowVaultAccess: true,
@@ -54,7 +52,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        new Setting(containerEl).setName('General').setHeading();
+        ;
 
         // Auto-detect Claude Code path
         new Setting(containerEl)
@@ -93,16 +91,17 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
             .setDesc('Verify that Claude Code is accessible and working')
             .addButton(button => button
                 .setButtonText('Test')
-                .onClick(async () => {
-                    const result = await this.testClaudeCode();
-                    if (result.success) {
-                        button.setButtonText('✓ Working!');
-                        setTimeout(() => button.setButtonText('Test'), 2000);
-                    } else {
-                        button.setButtonText('✗ Failed');
-                        setTimeout(() => button.setButtonText('Test'), 2000);
-                        new Notice(`Claude Code test failed: ${result.error}`);
-                    }
+                .onClick(() => {
+                    void this.testClaudeCode().then(result => {
+                        if (result.success) {
+                            button.setButtonText('✓ working!');
+                            setTimeout(() => { button.setButtonText('Test'); }, 2000);
+                        } else {
+                            button.setButtonText('✗ failed');
+                            setTimeout(() => { button.setButtonText('Test'); }, 2000);
+                            new Notice(`Claude Code test failed: ${result.error}`);
+                        }
+                    });
                 }));
 
         // Custom system prompt
@@ -131,21 +130,10 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        // Confirm before applying
-        new Setting(containerEl)
-            .setName('Confirm before applying changes')
-            .setDesc('Always show confirmation dialog before applying Claude Code changes')
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.confirmBeforeApplying)
-                .onChange(async (value) => {
-                    this.plugin.settings.confirmBeforeApplying = value;
-                    await this.plugin.saveSettings();
-                }));
-
         // Auto-accept changes
         new Setting(containerEl)
             .setName('Auto-accept changes')
-            .setDesc('Automatically apply changes without showing preview (⚠️ Use with caution!)')
+            .setDesc('Automatically apply changes without showing preview (⚠️ use with caution!)')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoAcceptChanges)
                 .onChange(async (value) => {
@@ -182,7 +170,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
         // Enable Permissionless Mode
         new Setting(containerEl)
             .setName('Enable permissionless mode')
-            .setDesc('Allow Claude to execute actions without asking for permission each time (⚠️ Use with caution! Claude will have full control)')
+            .setDesc('Allow Claude to execute actions without asking for permission each time (⚠️ use with caution! Claude will have full control)')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.enablePermissionlessMode)
                 .onChange(async (value) => {
@@ -240,7 +228,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
         // Anthropic Model
         new Setting(containerEl)
             .setName('Custom model')
-            .setDesc('Custom model name to use (e.g., kimi-for-coding). Overrides the Model dropdown above.')
+            .setDesc('Custom model name to use (e.g., kimi-for-coding). Overrides the model dropdown above.')
             .addText(text => text
                 .setPlaceholder('claude-sonnet-4-20250514')
                 .setValue(this.plugin.settings.anthropicModel)
@@ -307,7 +295,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                         return cmdPath;
                     }
                 }
-            } catch (e) {
+            } catch {
                 // Continue to next path
             }
         }

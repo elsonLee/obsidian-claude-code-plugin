@@ -9,6 +9,14 @@ import { NoteContext } from '../core/types';
 import { ClaudeCodeRunner } from '../core/claude-code-runner';
 import { ClaudeCodeSettings } from '../core/settings';
 
+interface SessionData {
+    history?: unknown[];
+    sessionId?: string;
+    outputLines?: string[];
+    agentSteps?: unknown[];
+    notePath?: string;
+}
+
 export class NoteContextManager {
     private contexts: Map<string, NoteContext> = new Map();
     private settings: ClaudeCodeSettings;
@@ -63,16 +71,16 @@ export class NoteContextManager {
 
             if (fs.existsSync(contextFile)) {
                 try {
-                    const data = JSON.parse(fs.readFileSync(contextFile, 'utf8'));
+                    const data = JSON.parse(fs.readFileSync(contextFile, 'utf8')) as SessionData;
 
                     // Reconstruct the context
                     const context: NoteContext = {
-                        history: data.history || [],
-                        sessionId: data.sessionId || null,
+                        history: (data.history ?? []) as NoteContext['history'],
+                        sessionId: data.sessionId ?? null,
                         currentResponse: null,
                         currentRequest: null,
-                        outputLines: data.outputLines || [],
-                        agentSteps: data.agentSteps || [],
+                        outputLines: data.outputLines ?? [],
+                        agentSteps: (data.agentSteps ?? []) as NoteContext['agentSteps'],
                         runner: new ClaudeCodeRunner(this.settings),
                         isRunning: false
                     };
@@ -81,7 +89,7 @@ export class NoteContextManager {
                     if (data.notePath) {
                         this.contexts.set(data.notePath, context);
                     }
-                } catch (e) {
+                } catch {
                     // Skip contexts that fail to load
                 }
             }
@@ -119,9 +127,9 @@ export class NoteContextManager {
     /**
      * Save all contexts
      */
-    async saveAllContexts(vaultPath: string): Promise<void> {
-        for (const [notePath, _] of this.contexts) {
-            await this.saveContext(notePath, vaultPath);
+    saveAllContexts(vaultPath: string): void {
+        for (const notePath of this.contexts.keys()) {
+            this.saveContext(notePath, vaultPath);
         }
     }
 
