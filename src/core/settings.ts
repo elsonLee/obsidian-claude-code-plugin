@@ -54,7 +54,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        new Setting(containerEl).setName('Claude Code integration settings').setHeading();
+        new Setting(containerEl).setName('General').setHeading();
 
         // Auto-detect Claude Code path
         new Setting(containerEl)
@@ -213,7 +213,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Base URL
         new Setting(containerEl)
-            .setName('API Base URL')
+            .setName('API base URL')
             .setDesc('Custom API endpoint URL (e.g., https://api.kimi.com/coding/)')
             .addText(text => text
                 .setPlaceholder('https://api.anthropic.com')
@@ -225,7 +225,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Auth Token
         new Setting(containerEl)
-            .setName('API Auth Token')
+            .setName('API auth token')
             .setDesc('Custom authentication token for the API endpoint')
             .addText(text => {
                 text.setPlaceholder('Enter your API token')
@@ -239,7 +239,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Model
         new Setting(containerEl)
-            .setName('Custom Model')
+            .setName('Custom model')
             .setDesc('Custom model name to use (e.g., kimi-for-coding). Overrides the Model dropdown above.')
             .addText(text => text
                 .setPlaceholder('claude-sonnet-4-20250514')
@@ -251,7 +251,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Small/Fast Model
         new Setting(containerEl)
-            .setName('Custom Small/Fast Model')
+            .setName('Custom small/fast model')
             .setDesc('Custom model name for fast operations (e.g., kimi-for-coding)')
             .addText(text => text
                 .setPlaceholder('claude-haiku-3-5-20241022')
@@ -364,7 +364,7 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                         ...process.env,
                         PATH: enhancedPath
                     }
-                }, (error: any, stdout: string, stderr: string) => {
+                }, (error: Error | null, stdout: string, stderr: string) => {
                     if (error) {
                         resolve({ success: false, error: error.message });
                     } else {

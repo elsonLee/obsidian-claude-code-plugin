@@ -3,6 +3,13 @@ import { ClaudeCodeRunner } from './claude-code-runner';
 
 export const VIEW_TYPE_CLAUDE_CODE = 'claude-code-view';
 
+// Token usage type
+export interface TokenUsage {
+    inputTokens?: number;
+    outputTokens?: number;
+    totalTokens?: number;
+}
+
 export interface SessionHistoryItem {
     prompt: string;
     timestamp: Date;

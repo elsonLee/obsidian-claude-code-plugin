@@ -1,3 +1,5 @@
+import { TokenUsage } from '../../core/types';
+
 /**
  * Result Renderer - Formats Claude's responses with better structure
  */
@@ -23,7 +25,7 @@ export class ResultRenderer {
     /**
      * Parse Claude's response into structured sections
      */
-    static parseResponse(markdownText: string, tokenUsage?: any): ParsedResult {
+    static parseResponse(markdownText: string, tokenUsage?: TokenUsage): ParsedResult {
         const lines = markdownText.split('\n');
         const sections: ResultSection[] = [];
         let directAnswer: string | null = null;
@@ -140,7 +142,7 @@ export class ResultRenderer {
         if (parsed.directAnswer) {
             const answerBox = container.createEl('div', { cls: 'result-direct-answer' });
             const answerLabel = answerBox.createEl('div', { cls: 'result-direct-answer-label' });
-            answerLabel.createEl('span', { text: '💡 Direct Answer' });
+            answerLabel.createEl('span', { text: '💡 Direct answer' });
 
             const answerContent = answerBox.createEl('div', { cls: 'result-direct-answer-content' });
             renderMarkdown(parsed.directAnswer, answerContent);

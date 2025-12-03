@@ -2,7 +2,7 @@
  * Output Renderer - Handles rendering of output and markdown content
  */
 
-import { MarkdownRenderer, Component } from 'obsidian';
+import { MarkdownRenderer, Component, App } from 'obsidian';
 import { AgentStep } from '../core/types';
 import { AgentActivityParser } from './parsers/agent-activity-parser';
 
@@ -10,12 +10,14 @@ export class OutputRenderer {
     private outputArea: HTMLDivElement;
     private outputSection: HTMLDivElement | null = null;
     private component: Component;
+    private app: App;
     private notePath: string;
     private currentStreamingElement: HTMLDivElement | null = null;
 
-    constructor(outputArea: HTMLDivElement, component: Component, notePath: string, outputSection?: HTMLDivElement) {
+    constructor(outputArea: HTMLDivElement, component: Component, app: App, notePath: string, outputSection?: HTMLDivElement) {
         this.outputArea = outputArea;
         this.component = component;
+        this.app = app;
         this.notePath = notePath;
         this.currentStreamingElement = null;
         this.outputSection = outputSection || null;
@@ -40,9 +42,9 @@ export class OutputRenderer {
         if (isMarkdown) {
             line.classList.add('markdown-rendered');
             try {
-                MarkdownRenderer.renderMarkdown(text, line, this.notePath, this.component as any);
-            } catch (e) {
-                console.error('[MARKDOWN RENDER ERROR]', e);
+                MarkdownRenderer.render(this.app, text, line, this.notePath, this.component);
+            } catch (error) {
+                console.error('[MARKDOWN RENDER ERROR]', error);
                 line.textContent = text;
             }
         } else {
@@ -68,7 +70,7 @@ export class OutputRenderer {
         }
 
         // Wrap each chunk in a span with fade-in animation
-        const textSpan = this.currentStreamingElement.createEl('span', {
+        this.currentStreamingElement.createEl('span', {
             cls: 'streaming-text-chunk',
             text: text
         });
@@ -98,7 +100,7 @@ export class OutputRenderer {
      */
     private showOutputSection(): void {
         if (this.outputSection) {
-            this.outputSection.style.display = 'block';
+            this.outputSection.removeClass('claude-code-hidden');
         }
     }
 
@@ -107,7 +109,7 @@ export class OutputRenderer {
      */
     private hideOutputSection(): void {
         if (this.outputSection) {
-            this.outputSection.style.display = 'none';
+            this.outputSection.addClass('claude-code-hidden');
         }
     }
 

@@ -1,4 +1,33 @@
 /**
+ * Tool input type - flexible record for various tool inputs
+ */
+interface ToolInput {
+    command?: string;
+    description?: string;
+    query?: string;
+    allowed_domains?: string[];
+    blocked_domains?: string[];
+    url?: string;
+    prompt?: string;
+    pattern?: string;
+    path?: string;
+    output_mode?: string;
+    file_path?: string;
+    offset?: number;
+    limit?: number;
+    content?: string;
+    replace_all?: boolean;
+    subagent_type?: string;
+    todos?: unknown;
+    [key: string]: unknown;
+}
+
+/**
+ * Tool result type - can be various shapes depending on the tool
+ */
+type ToolResult = { stdout?: string; [key: string]: unknown } | string | null | undefined;
+
+/**
  * Utility for formatting tool usage information in a consistent way
  */
 export class ToolOutputFormatter {
@@ -10,7 +39,7 @@ export class ToolOutputFormatter {
      * @param format Format style: 'compact' for message blocks, 'verbose' for events
      * @returns Array of formatted output lines
      */
-    static formatToolUsage(toolName: string, toolInput: any, format: 'compact' | 'verbose' = 'compact'): string[] {
+    static formatToolUsage(toolName: string, toolInput: ToolInput, format: 'compact' | 'verbose' = 'compact'): string[] {
         const lines: string[] = [];
 
         if (format === 'verbose') {
@@ -46,7 +75,7 @@ export class ToolOutputFormatter {
     /**
      * Format tool-specific parameters
      */
-    private static formatToolSpecificParams(toolName: string, toolInput: any, format: 'compact' | 'verbose'): string[] {
+    private static formatToolSpecificParams(toolName: string, toolInput: ToolInput, format: 'compact' | 'verbose'): string[] {
         const lines: string[] = [];
 
         if (!toolInput) {
@@ -205,17 +234,22 @@ export class ToolOutputFormatter {
      * @param result Result object from the tool
      * @returns Array of formatted output lines
      */
-    static formatToolResult(toolName: string, result: any): string[] {
+    static formatToolResult(toolName: string, result: ToolResult): string[] {
         const lines: string[] = [];
 
-        if (toolName === 'Bash' && result?.stdout) {
-            const output = result.stdout.trim();
-            if (output) {
-                const outputLines = output.split('\n');
-                lines.push(`   ✓ Output (${outputLines.length} lines):\n`);
-                // Show first few lines of output
-                const preview = outputLines.slice(0, 3).join('\n');
-                lines.push(`   ${preview}${outputLines.length > 3 ? '\n   ...' : ''}\n`);
+        if (toolName === 'Bash' && result && typeof result === 'object') {
+            const stdout = result.stdout;
+            if (typeof stdout === 'string') {
+                const output = stdout.trim();
+                if (output) {
+                    const outputLines = output.split('\n');
+                    lines.push(`   ✓ Output (${outputLines.length} lines):\n`);
+                    // Show first few lines of output
+                    const preview = outputLines.slice(0, 3).join('\n');
+                    lines.push(`   ${preview}${outputLines.length > 3 ? '\n   ...' : ''}\n`);
+                } else {
+                    lines.push(`   ✓ ${toolName} complete\n`);
+                }
             } else {
                 lines.push(`   ✓ ${toolName} complete\n`);
             }

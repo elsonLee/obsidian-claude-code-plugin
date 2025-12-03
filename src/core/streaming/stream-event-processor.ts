@@ -11,6 +11,47 @@ export type OutputCallback = (text: string, isMarkdown?: boolean, isStreaming?: 
 export type SessionIdCallback = (sessionId: string) => void;
 
 /**
+ * Stream event from Claude Code CLI - uses index signature to avoid 'any'
+ */
+interface StreamEventData {
+    type: string;
+    subtype?: string;
+    model?: string;
+    tools?: string[];
+    session_id?: string;
+    message?: {
+        content?: Array<{
+            type: string;
+            text?: string;
+            name?: string;
+            input?: Record<string, unknown>;
+            tool_use_id?: string;
+            content?: string | unknown;
+        }>;
+    };
+    tool_name?: string;
+    input?: Record<string, unknown>;
+    result?: string | Record<string, unknown>;
+    duration_ms?: number;
+    total_cost_usd?: number;
+    usage?: {
+        input_tokens: number;
+        output_tokens: number;
+    };
+    event?: {
+        type: string;
+        delta?: {
+            type: string;
+            text?: string;
+        };
+        content_block?: {
+            type: string;
+        };
+    };
+    [key: string]: unknown;
+}
+
+/**
  * Utility for processing stream events from Claude Code CLI
  */
 export class StreamEventProcessor {
@@ -22,7 +63,7 @@ export class StreamEventProcessor {
      * @param setSessionId Optional callback to store session ID
      */
     static processEvent(
-        event: any,
+        event: StreamEventData,
         sendOutput: OutputCallback,
         setSessionId?: SessionIdCallback
     ): void {
@@ -61,7 +102,7 @@ export class StreamEventProcessor {
      * Handle system initialization events
      */
     private static handleSystemEvent(
-        event: any,
+        event: StreamEventData,
         sendOutput: OutputCallback,
         setSessionId?: SessionIdCallback
     ): void {
@@ -80,18 +121,18 @@ export class StreamEventProcessor {
     /**
      * Handle assistant message events
      */
-    private static handleAssistantEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleAssistantEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         // Extract text content from assistant message
         if (event.message?.content) {
             for (const block of event.message.content) {
-                if (block.type === 'text') {
+                if (block.type === 'text' && block.text) {
                     // Send assistant text as markdown for rendering
                     // Mark as assistant message so it can be shown in Result section
                     sendOutput(block.text, true, false, true);
-                } else if (block.type === 'tool_use') {
+                } else if (block.type === 'tool_use' && block.name) {
                     // Display detailed tool usage from assistant message
                     const toolName = block.name;
-                    const toolInput = block.input;
+                    const toolInput = block.input || {};
 
                     sendOutput(`\n🔧 Using tool: ${toolName}\n`);
 
@@ -108,7 +149,7 @@ export class StreamEventProcessor {
     /**
      * Handle tool use events
      */
-    private static handleToolUseEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleToolUseEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         const toolName = event.tool_name || 'unknown';
 
         if (event.subtype === 'input' && event.input) {
@@ -136,7 +177,7 @@ export class StreamEventProcessor {
     /**
      * Handle user/tool result events
      */
-    private static handleUserEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleUserEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         // Tool results coming back from Claude Code
         if (event.message?.content) {
             for (const block of event.message.content) {
@@ -166,7 +207,7 @@ export class StreamEventProcessor {
     /**
      * Handle final result events
      */
-    private static handleResultEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleResultEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         sendOutput(`\n✅ Complete!\n`);
         sendOutput(`⏱️  Duration: ${event.duration_ms}ms\n`);
         sendOutput(`💰 Cost: $${event.total_cost_usd?.toFixed(4) || '0.0000'}\n`);
@@ -178,9 +219,10 @@ export class StreamEventProcessor {
     /**
      * Handle real-time streaming events
      */
-    private static handleStreamEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleStreamEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         // The actual event is nested inside event.event
-        const streamEvent = event.event || event;
+        const streamEvent = event.event;
+        if (!streamEvent) return;
 
         // Real-time streaming events with text deltas
         if (streamEvent.type === 'content_block_delta') {
@@ -206,15 +248,16 @@ export class StreamEventProcessor {
     /**
      * Handle unknown event types (debugging)
      */
-    private static handleUnknownEvent(event: any, sendOutput: OutputCallback): void {
+    private static handleUnknownEvent(event: StreamEventData, sendOutput: OutputCallback): void {
         // Display ALL unknown events for debugging
         sendOutput(`\n🔍 [${event.type}${event.subtype ? ' / ' + event.subtype : ''}]\n`);
 
         // Show key fields from the event
-        const displayFields = ['session_id', 'uuid', 'duration_ms', 'model', 'is_error'];
+        const displayFields = ['session_id', 'uuid', 'duration_ms', 'model', 'is_error'] as const;
         for (const field of displayFields) {
-            if (event[field] !== undefined) {
-                sendOutput(`   ${field}: ${event[field]}\n`);
+            const value = event[field];
+            if (value !== undefined) {
+                sendOutput(`   ${field}: ${value}\n`);
             }
         }
 

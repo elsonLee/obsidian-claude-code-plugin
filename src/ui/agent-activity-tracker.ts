@@ -29,12 +29,11 @@ export class AgentActivityTracker {
         if (!this.agentStepsContainer || !this.agentActivitySection) return;
 
         // Show the activity section when adding steps
-        this.agentActivitySection.style.display = 'block';
+        this.agentActivitySection.removeClass('claude-code-hidden');
 
         // Show the agent container
         if (this.agentContainer) {
-            this.agentContainer.removeClass('is-hidden');
-            this.agentContainer.addClass('is-visible');
+            this.agentContainer.removeClass('claude-code-hidden');
         }
 
         // Check if we already have this step - update it if so
@@ -155,7 +154,7 @@ export class AgentActivityTracker {
 
         // Hide the activity column when empty
         if (this.agentActivitySection) {
-            this.agentActivitySection.style.display = 'none';
+            this.agentActivitySection.addClass('claude-code-hidden');
         }
 
         // Note: We don't hide the main container here because the todo list might still be visible

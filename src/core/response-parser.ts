@@ -1,16 +1,12 @@
 import { ClaudeCodeResponse } from './claude-code-runner';
-import { ResponseContentExtractor } from './streaming/response-content-extractor';
+import { TokenUsage } from './types';
 
 /**
  * Parsed stream output from Claude Code
  */
 export interface ParsedOutput {
     assistantText: string;
-    tokenUsage?: {
-        inputTokens?: number;
-        outputTokens?: number;
-        totalTokens?: number;
-    };
+    tokenUsage?: TokenUsage;
 }
 
 /**
@@ -25,7 +21,7 @@ export class ResponseParser {
      */
     static parseOutput(outputLines: string[]): ParsedOutput {
         let assistantText = '';
-        let tokenUsage: any = undefined;
+        let tokenUsage: TokenUsage | undefined = undefined;
 
         for (const line of outputLines) {
             try {

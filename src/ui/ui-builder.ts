@@ -132,34 +132,33 @@ export class UIBuilder {
     static buildAgentSection(container: HTMLElement): void {
         // Main container for the entire agent section
         const agentContainer = container.createEl('div', {
-            cls: 'claude-code-agent-container'
+            cls: 'claude-code-agent-container claude-code-hidden'
         });
-        agentContainer.style.display = 'none';
         agentContainer.id = 'claude-code-agent-container';
 
         // Left column: Claude's Plan (todos)
-        const planColumn = agentContainer.createEl('div', { cls: 'claude-code-agent-column claude-code-plan-column' });
-        planColumn.style.display = 'none'; // Hidden by default - only shown when there's a plan
+        const planColumn = agentContainer.createEl('div', { cls: 'claude-code-agent-column claude-code-plan-column claude-code-hidden' });
+        // Hidden by default - only shown when there's a plan
 
         const planHeader = planColumn.createEl('div', { cls: 'claude-code-agent-column-header' });
         planHeader.createEl('span', { text: '📋 Plan' });
 
         const todoList = planColumn.createEl('div', {
-            cls: 'claude-code-todo-list',
+            cls: 'claude-code-todo-list claude-code-hidden',
             attr: { id: 'claude-code-todo-list' }
         });
-        todoList.style.display = 'none'; // Hidden by default
+        // Hidden by default
 
         const emptyPlanMessage = planColumn.createEl('div', {
-            cls: 'claude-code-empty-message',
+            cls: 'claude-code-empty-message claude-code-hidden',
             text: 'No plan created yet'
         });
         emptyPlanMessage.id = 'claude-code-empty-plan';
-        emptyPlanMessage.style.display = 'none'; // Hidden by default
+        // Hidden by default
 
         // Right column: Agent Activity (tool executions)
-        const activityColumn = agentContainer.createEl('div', { cls: 'claude-code-agent-column claude-code-activity-column' });
-        activityColumn.style.display = 'none'; // Hidden by default until steps are added
+        const activityColumn = agentContainer.createEl('div', { cls: 'claude-code-agent-column claude-code-activity-column claude-code-hidden' });
+        // Hidden by default until steps are added
 
         const activityHeader = activityColumn.createEl('div', { cls: 'claude-code-agent-column-header collapsible-header' });
         const activityTitle = activityHeader.createEl('span', { cls: 'collapsible-title' });
@@ -173,18 +172,14 @@ export class UIBuilder {
 
         // Add click handler to toggle collapse
         activityHeader.addEventListener('click', () => {
-            const isCollapsed = activitySteps.style.display === 'none';
-            activitySteps.style.display = isCollapsed ? 'block' : 'none';
+            const isCollapsed = activitySteps.hasClass('claude-code-hidden');
+            activitySteps.toggleClass('claude-code-hidden', !isCollapsed);
             const indicator = activityHeader.querySelector('.collapse-indicator');
             if (indicator) {
                 indicator.textContent = isCollapsed ? '▼ ' : '▶ ';
             }
             // Toggle collapsed class on container
-            if (isCollapsed) {
-                agentContainer.removeClass('collapsed');
-            } else {
-                agentContainer.addClass('collapsed');
-            }
+            agentContainer.toggleClass('collapsed', !isCollapsed);
         });
     }
 
@@ -196,9 +191,8 @@ export class UIBuilder {
         onRespond: (response: string) => void
     ): HTMLDivElement {
         const interactivePromptSection = container.createEl('div', {
-            cls: 'claude-code-interactive-prompt'
+            cls: 'claude-code-interactive-prompt claude-code-hidden'
         });
-        interactivePromptSection.style.display = 'none';
         interactivePromptSection.id = 'claude-code-interactive-prompt';
 
         interactivePromptSection.createEl('div', {
@@ -255,9 +249,8 @@ export class UIBuilder {
         denyPermissionButton: HTMLButtonElement;
     } {
         const permissionApprovalSection = container.createEl('div', {
-            cls: 'claude-code-permission-approval'
+            cls: 'claude-code-permission-approval claude-code-hidden'
         });
-        permissionApprovalSection.style.display = 'none';
         permissionApprovalSection.id = 'claude-code-permission-approval';
 
         permissionApprovalSection.createEl('div', {
@@ -293,8 +286,7 @@ export class UIBuilder {
      * Build the result section (for non-edit responses)
      */
     static buildResultSection(container: HTMLElement): { resultArea: HTMLDivElement; statusArea: HTMLDivElement; statusText: HTMLSpanElement } {
-        const resultSection = container.createEl('div', { cls: 'claude-code-result-section' });
-        resultSection.style.display = 'none';
+        const resultSection = container.createEl('div', { cls: 'claude-code-result-section claude-code-hidden' });
         resultSection.id = 'claude-code-result-section';
 
         const resultHeader = resultSection.createEl('div', { cls: 'claude-code-result-header collapsible-header' });
@@ -305,11 +297,10 @@ export class UIBuilder {
         const contentWrapper = resultSection.createEl('div', { cls: 'collapsible-content' });
 
         // Status area (shown during processing)
-        const statusArea = contentWrapper.createEl('div', { cls: 'claude-code-status-area' });
-        statusArea.style.display = 'none';
+        const statusArea = contentWrapper.createEl('div', { cls: 'claude-code-status-area claude-code-hidden' });
 
         const statusTextContainer = statusArea.createEl('div', { cls: 'claude-code-status-text' });
-        const statusSpinner = statusTextContainer.createEl('div', { cls: 'claude-code-status-spinner' });
+        statusTextContainer.createEl('div', { cls: 'claude-code-status-spinner' });
         const statusText = statusTextContainer.createEl('span');
 
         const progressBarContainer = statusArea.createEl('div', { cls: 'claude-code-progress-bar-container' });
@@ -317,24 +308,19 @@ export class UIBuilder {
 
         // Result area (shown when there's a result)
         const resultArea = contentWrapper.createEl('div', {
-            cls: 'claude-code-result-area markdown-rendered'
+            cls: 'claude-code-result-area markdown-rendered claude-code-hidden'
         });
-        resultArea.style.display = 'none';
 
         // Add click handler to toggle collapse
         resultHeader.addEventListener('click', () => {
-            const isCollapsed = contentWrapper.style.display === 'none';
-            contentWrapper.style.display = isCollapsed ? 'block' : 'none';
+            const isCollapsed = contentWrapper.hasClass('claude-code-hidden');
+            contentWrapper.toggleClass('claude-code-hidden', !isCollapsed);
             const indicator = resultHeader.querySelector('.collapse-indicator');
             if (indicator) {
                 indicator.textContent = isCollapsed ? '▼ ' : '▶ ';
             }
             // Toggle collapsed class on section
-            if (isCollapsed) {
-                resultSection.removeClass('collapsed');
-            } else {
-                resultSection.addClass('collapsed');
-            }
+            resultSection.toggleClass('collapsed', !isCollapsed);
         });
 
         return { resultArea, statusArea, statusText };
@@ -344,7 +330,7 @@ export class UIBuilder {
      * Build the output section
      */
     static buildOutputSection(container: HTMLElement): { outputArea: HTMLDivElement; outputSection: HTMLDivElement } {
-        const outputSection = container.createEl('div', { cls: 'claude-code-output-section' });
+        const outputSection = container.createEl('div', { cls: 'claude-code-output-section claude-code-hidden' });
         const outputHeader = outputSection.createEl('div', { cls: 'claude-code-output-header collapsible-header' });
 
         const headerTitle = outputHeader.createEl('span', { cls: 'collapsible-title' });
@@ -357,22 +343,15 @@ export class UIBuilder {
 
         // Toggle output visibility when clicking header
         outputHeader.addEventListener('click', () => {
-            const isCollapsed = outputArea.style.display === 'none';
-            outputArea.style.display = isCollapsed ? 'block' : 'none';
+            const isCollapsed = outputArea.hasClass('claude-code-hidden');
+            outputArea.toggleClass('claude-code-hidden', !isCollapsed);
             const indicator = outputHeader.querySelector('.collapse-indicator');
             if (indicator) {
                 indicator.textContent = isCollapsed ? '▼ ' : '▶ ';
             }
             // Toggle collapsed class on section
-            if (isCollapsed) {
-                outputSection.removeClass('collapsed');
-            } else {
-                outputSection.addClass('collapsed');
-            }
+            outputSection.toggleClass('collapsed', !isCollapsed);
         });
-
-        // Initially hide the output section
-        outputSection.style.display = 'none';
 
         return { outputArea, outputSection };
     }
@@ -391,8 +370,7 @@ export class UIBuilder {
         applyButton: HTMLButtonElement;
         rejectButton: HTMLButtonElement;
     } {
-        const previewSection = container.createEl('div', { cls: 'claude-code-preview-section' });
-        previewSection.style.display = 'none';
+        const previewSection = container.createEl('div', { cls: 'claude-code-preview-section claude-code-hidden' });
         previewSection.id = 'claude-code-preview-section';
 
         const previewHeader = previewSection.createEl('div', { cls: 'claude-code-preview-header collapsible-header' });
@@ -434,49 +412,45 @@ export class UIBuilder {
             rawTab.addClass('active');
             diffTab.removeClass('active');
             renderedTab.removeClass('active');
-            previewArea.style.display = 'block';
-            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff') as HTMLElement;
-            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered') as HTMLElement;
-            if (diffArea) diffArea.style.display = 'none';
-            if (renderedArea) renderedArea.style.display = 'none';
+            previewArea.removeClass('claude-code-hidden');
+            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff');
+            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered');
+            if (diffArea) diffArea.addClass('claude-code-hidden');
+            if (renderedArea) renderedArea.addClass('claude-code-hidden');
         });
 
         diffTab.addEventListener('click', () => {
             diffTab.addClass('active');
             rawTab.removeClass('active');
             renderedTab.removeClass('active');
-            previewArea.style.display = 'none';
-            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff') as HTMLElement;
-            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered') as HTMLElement;
-            if (diffArea) diffArea.style.display = 'block';
-            if (renderedArea) renderedArea.style.display = 'none';
+            previewArea.addClass('claude-code-hidden');
+            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff');
+            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered');
+            if (diffArea) diffArea.removeClass('claude-code-hidden');
+            if (renderedArea) renderedArea.addClass('claude-code-hidden');
         });
 
         renderedTab.addEventListener('click', () => {
             renderedTab.addClass('active');
             rawTab.removeClass('active');
             diffTab.removeClass('active');
-            previewArea.style.display = 'none';
-            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff') as HTMLElement;
-            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered') as HTMLElement;
-            if (diffArea) diffArea.style.display = 'none';
-            if (renderedArea) renderedArea.style.display = 'block';
+            previewArea.addClass('claude-code-hidden');
+            const diffArea = previewContentContainer.querySelector('.claude-code-preview-diff');
+            const renderedArea = previewContentContainer.querySelector('.claude-code-preview-rendered');
+            if (diffArea) diffArea.addClass('claude-code-hidden');
+            if (renderedArea) renderedArea.removeClass('claude-code-hidden');
         });
 
         // Add click handler to toggle collapse
         headerTitle.addEventListener('click', () => {
-            const isCollapsed = previewContent.style.display === 'none';
-            previewContent.style.display = isCollapsed ? 'block' : 'none';
+            const isCollapsed = previewContent.hasClass('claude-code-hidden');
+            previewContent.toggleClass('claude-code-hidden', !isCollapsed);
             const indicator = previewHeader.querySelector('.collapse-indicator');
             if (indicator) {
                 indicator.textContent = isCollapsed ? '▼ ' : '▶ ';
             }
             // Toggle collapsed class on section
-            if (isCollapsed) {
-                previewSection.removeClass('collapsed');
-            } else {
-                previewSection.addClass('collapsed');
-            }
+            previewSection.toggleClass('collapsed', !isCollapsed);
         });
 
         return { previewArea, previewContentContainer, previewTabsContainer, applyButton, rejectButton };
@@ -489,8 +463,7 @@ export class UIBuilder {
         container: HTMLElement,
         onClearHistory: () => void
     ): HTMLUListElement {
-        const historySection = container.createEl('div', { cls: 'claude-code-history-section' });
-        historySection.style.display = 'none';
+        const historySection = container.createEl('div', { cls: 'claude-code-history-section claude-code-hidden' });
         historySection.id = 'claude-code-history-section';
 
         const historyHeader = historySection.createEl('div', { cls: 'claude-code-history-header collapsible-header' });
@@ -511,18 +484,14 @@ export class UIBuilder {
 
         // Add click handler to toggle collapse
         headerTitle.addEventListener('click', () => {
-            const isCollapsed = historyList.style.display === 'none';
-            historyList.style.display = isCollapsed ? 'block' : 'none';
+            const isCollapsed = historyList.hasClass('claude-code-hidden');
+            historyList.toggleClass('claude-code-hidden', !isCollapsed);
             const indicator = historyHeader.querySelector('.collapse-indicator');
             if (indicator) {
                 indicator.textContent = isCollapsed ? '▼ ' : '▶ ';
             }
             // Toggle collapsed class on section
-            if (isCollapsed) {
-                historySection.removeClass('collapsed');
-            } else {
-                historySection.addClass('collapsed');
-            }
+            historySection.toggleClass('collapsed', !isCollapsed);
         });
 
         return historyList;

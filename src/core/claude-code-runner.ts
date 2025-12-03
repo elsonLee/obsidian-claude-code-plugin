@@ -16,7 +16,7 @@ export interface ClaudeCodeRequest {
     notePath: string;
     selectedText?: string;
     vaultPath?: string;
-    configDir?: string;  // Obsidian config directory (e.g., '.obsidian')
+    configDir: string;  // Obsidian config directory from Vault.configDir
     bypassPermissions?: boolean;
     runtimeModelOverride?: string;
     conversationalMode?: boolean;  // When true, no file modifications are allowed
@@ -96,7 +96,7 @@ export class ClaudeCodeRunner {
             const sessionInfo = SessionManager.getSessionInfo(
                 request.notePath,
                 request.vaultPath || '',
-                request.configDir || '.obsidian'
+                request.configDir
             );
 
             this.sendOutput(sessionInfo.isNewSession
@@ -408,9 +408,10 @@ export class ClaudeCodeRunner {
     /**
      * Handle stream-json events
      */
-    private handleStreamEvent(event: any): void {
+    private handleStreamEvent(event: Record<string, unknown>): void {
+        // Event comes from JSON.parse of CLI output - has index signature compatible with StreamEventData
         StreamEventProcessor.processEvent(
-            event,
+            event as Parameters<typeof StreamEventProcessor.processEvent>[0],
             (text: string, isMarkdown?: boolean, isStreaming?: boolean | 'finish', isAssistantMessage?: boolean) => this.sendOutput(text, isMarkdown, isStreaming, isAssistantMessage),
             (sessionId: string) => { this.currentSessionId = sessionId; }
         );

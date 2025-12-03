@@ -20,10 +20,10 @@ export class SessionManager {
      *
      * @param notePath Path to the note file
      * @param vaultPath Path to the vault root
-     * @param configDir Optional config directory name (defaults to '.obsidian')
+     * @param configDir Config directory name from Vault.configDir
      * @returns Session information
      */
-    static getSessionInfo(notePath: string, vaultPath: string, configDir: string = '.obsidian'): SessionInfo {
+    static getSessionInfo(notePath: string, vaultPath: string, configDir: string): SessionInfo {
         // Create a hash of the note path for the session directory name
         const noteHash = crypto.createHash('md5').update(notePath).digest('hex');
         const sessionDir = path.join(vaultPath, configDir, 'claude-code-sessions', noteHash);
@@ -42,8 +42,8 @@ export class SessionManager {
             try {
                 sessionId = fs.readFileSync(sessionIdFile, 'utf8').trim();
                 isNewSession = false;
-            } catch (e) {
-                console.warn('Error loading session ID:', e);
+            } catch (error) {
+                console.warn('Error loading session ID:', error);
             }
         }
 
@@ -64,9 +64,9 @@ export class SessionManager {
         try {
             const sessionIdFile = path.join(sessionDir, 'session_id.txt');
             fs.writeFileSync(sessionIdFile, sessionId);
-        } catch (e) {
-            console.error('Error saving session ID:', e);
-            throw e;
+        } catch (error) {
+            console.error('Error saving session ID:', error);
+            throw error;
         }
     }
 
@@ -86,7 +86,7 @@ export class SessionManager {
 
         try {
             // Load existing history
-            let history: any[] = [];
+            let history: Array<{role: string, content: string, timestamp: string}> = [];
             if (fs.existsSync(historyFile)) {
                 history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
             }
@@ -111,9 +111,9 @@ export class SessionManager {
 
             // Save history
             fs.writeFileSync(historyFile, JSON.stringify(history, null, 2));
-        } catch (e) {
-            console.error('Error saving conversation history:', e);
-            throw e;
+        } catch (error) {
+            console.error('Error saving conversation history:', error);
+            throw error;
         }
     }
 }

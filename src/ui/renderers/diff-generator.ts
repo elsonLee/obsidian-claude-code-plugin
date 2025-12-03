@@ -11,85 +11,92 @@ export interface DiffChange {
 
 export class DiffGenerator {
     /**
-     * Generate side-by-side HTML diff view between original and modified content
+     * Generate side-by-side diff view as a DOM element between original and modified content
      *
      * @param original Original content
      * @param modified Modified content
-     * @returns HTML string representing the side-by-side diff
+     * @returns HTMLElement representing the side-by-side diff
      */
-    static generateDiff(original: string, modified: string): string {
+    static generateDiffElement(original: string, modified: string): HTMLElement {
         const originalLines = original.split('\n');
         const modifiedLines = modified.split('\n');
 
         // Compute diff
         const diff = this.computeDiff(originalLines, modifiedLines);
 
-        let html = '<div class="claude-code-diff-side-by-side">';
+        const container = document.createElement('div');
+        container.className = 'claude-code-diff-side-by-side';
 
         // Header
-        html += '<div class="diff-header">';
-        html += '<div class="diff-column diff-column-left"><span class="diff-header-title">Original</span></div>';
-        html += '<div class="diff-column diff-column-right"><span class="diff-header-title">Modified</span></div>';
-        html += '</div>';
+        const header = document.createElement('div');
+        header.className = 'diff-header';
+
+        const leftHeader = document.createElement('div');
+        leftHeader.className = 'diff-column diff-column-left';
+        const leftTitle = document.createElement('span');
+        leftTitle.className = 'diff-header-title';
+        leftTitle.textContent = 'Original';
+        leftHeader.appendChild(leftTitle);
+
+        const rightHeader = document.createElement('div');
+        rightHeader.className = 'diff-column diff-column-right';
+        const rightTitle = document.createElement('span');
+        rightTitle.className = 'diff-header-title';
+        rightTitle.textContent = 'Modified';
+        rightHeader.appendChild(rightTitle);
+
+        header.appendChild(leftHeader);
+        header.appendChild(rightHeader);
+        container.appendChild(header);
 
         // Content
-        html += '<div class="diff-content">';
+        const content = document.createElement('div');
+        content.className = 'diff-content';
 
         for (const change of diff) {
+            const row = document.createElement('div');
+            row.className = `diff-row diff-${change.type}`;
+
             if (change.type === 'equal') {
-                // Both sides show the same line
-                html += '<div class="diff-row diff-equal">';
-                html += `<div class="diff-column diff-column-left">`;
-                html += `<span class="diff-line-number">${change.oldLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.oldContent || '')}</span>`;
-                html += `</div>`;
-                html += `<div class="diff-column diff-column-right">`;
-                html += `<span class="diff-line-number">${change.newLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.newContent || '')}</span>`;
-                html += `</div>`;
-                html += '</div>';
+                row.appendChild(this.createDiffColumn('left', change.oldLineNum, change.oldContent));
+                row.appendChild(this.createDiffColumn('right', change.newLineNum, change.newContent));
             } else if (change.type === 'delete') {
-                // Left side shows deleted line, right side is empty
-                html += '<div class="diff-row diff-delete">';
-                html += `<div class="diff-column diff-column-left">`;
-                html += `<span class="diff-line-number">${change.oldLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.oldContent || '')}</span>`;
-                html += `</div>`;
-                html += `<div class="diff-column diff-column-right diff-empty">`;
-                html += `<span class="diff-line-number"></span>`;
-                html += `<span class="diff-line-content"></span>`;
-                html += `</div>`;
-                html += '</div>';
+                row.appendChild(this.createDiffColumn('left', change.oldLineNum, change.oldContent));
+                row.appendChild(this.createDiffColumn('right', undefined, undefined, true));
             } else if (change.type === 'insert') {
-                // Right side shows inserted line, left side is empty
-                html += '<div class="diff-row diff-insert">';
-                html += `<div class="diff-column diff-column-left diff-empty">`;
-                html += `<span class="diff-line-number"></span>`;
-                html += `<span class="diff-line-content"></span>`;
-                html += `</div>`;
-                html += `<div class="diff-column diff-column-right">`;
-                html += `<span class="diff-line-number">${change.newLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.newContent || '')}</span>`;
-                html += `</div>`;
-                html += '</div>';
+                row.appendChild(this.createDiffColumn('left', undefined, undefined, true));
+                row.appendChild(this.createDiffColumn('right', change.newLineNum, change.newContent));
             } else if (change.type === 'modify') {
-                // Both sides show content (modification)
-                html += '<div class="diff-row diff-modify">';
-                html += `<div class="diff-column diff-column-left">`;
-                html += `<span class="diff-line-number">${change.oldLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.oldContent || '')}</span>`;
-                html += `</div>`;
-                html += `<div class="diff-column diff-column-right">`;
-                html += `<span class="diff-line-number">${change.newLineNum}</span>`;
-                html += `<span class="diff-line-content">${this.escapeHtml(change.newContent || '')}</span>`;
-                html += `</div>`;
-                html += '</div>';
+                row.appendChild(this.createDiffColumn('left', change.oldLineNum, change.oldContent));
+                row.appendChild(this.createDiffColumn('right', change.newLineNum, change.newContent));
             }
+
+            content.appendChild(row);
         }
 
-        html += '</div>'; // diff-content
-        html += '</div>'; // diff-side-by-side
-        return html;
+        container.appendChild(content);
+        return container;
+    }
+
+    /**
+     * Create a diff column element
+     */
+    private static createDiffColumn(side: 'left' | 'right', lineNum?: number, content?: string, isEmpty: boolean = false): HTMLElement {
+        const column = document.createElement('div');
+        column.className = `diff-column diff-column-${side}${isEmpty ? ' diff-empty' : ''}`;
+
+        const lineNumSpan = document.createElement('span');
+        lineNumSpan.className = 'diff-line-number';
+        lineNumSpan.textContent = lineNum !== undefined ? String(lineNum) : '';
+
+        const contentSpan = document.createElement('span');
+        contentSpan.className = 'diff-line-content';
+        contentSpan.textContent = content || '';
+
+        column.appendChild(lineNumSpan);
+        column.appendChild(contentSpan);
+
+        return column;
     }
 
     /**
@@ -157,17 +164,5 @@ export class DiffGenerator {
         }
 
         return result;
-    }
-
-    /**
-     * Escape HTML entities
-     *
-     * @param text Text to escape
-     * @returns Escaped text safe for HTML insertion
-     */
-    private static escapeHtml(text: string): string {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 }

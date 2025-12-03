@@ -117,7 +117,7 @@ export class ClaudeCodeView extends ItemView {
         this.buildUI(container);
 
         // Initialize output renderer now that outputArea exists
-        this.outputRenderer = new OutputRenderer(this.outputArea, this, this.currentNotePath, this.outputSection);
+        this.outputRenderer = new OutputRenderer(this.outputArea, this, this.app, this.currentNotePath, this.outputSection);
 
         // Load context for current note
         if (this.currentNotePath) {
@@ -137,7 +137,7 @@ export class ClaudeCodeView extends ItemView {
         const inputElements = UIBuilder.buildInputSection(
             container,
             this.plugin.settings.autoAcceptChanges,
-            () => this.handleRunClaudeCode(),
+            () => void this.handleRunClaudeCode(),
             () => this.handleCancel()
         );
         this.promptInput = inputElements.promptInput;
@@ -170,7 +170,7 @@ export class ClaudeCodeView extends ItemView {
         this.promptInputKeydownHandler = (e: KeyboardEvent) => {
             if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
-                this.handleRunClaudeCode();
+                void this.handleRunClaudeCode();
             } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
                 const start = this.promptInput.selectionStart ?? 0;
@@ -200,7 +200,7 @@ export class ClaudeCodeView extends ItemView {
         // Permission approval section (after result)
         const permissionElements = UIBuilder.buildPermissionApprovalSection(
             container,
-            () => this.handleApprovePermission(),
+            () => void this.handleApprovePermission(),
             () => this.handleDenyPermission()
         );
         this.permissionApprovalSection = permissionElements.permissionApprovalSection;
@@ -854,12 +854,9 @@ export class ClaudeCodeView extends ItemView {
             cls: 'claude-code-preview-diff claude-code-visible'
         });
 
-        // Use safe DOM manipulation instead of innerHTML
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = this.generateDiff(originalContent, modifiedContent);
-        while (tempContainer.firstChild) {
-            diffArea.appendChild(tempContainer.firstChild);
-        }
+        // Use safe DOM manipulation
+        const diffElement = this.generateDiffElement(originalContent, modifiedContent);
+        diffArea.appendChild(diffElement);
 
         // Create rendered markdown view
         const renderedArea = this.previewContentContainer.createEl('div', {
@@ -984,7 +981,6 @@ export class ClaudeCodeView extends ItemView {
             }
 
             // Update what we've rendered
-            const renderedLength = completeBlocks.join('\n\n').length;
             this.lastRenderedText = this.lastRenderedText + newContent.substring(0, newContent.length - remainingText.length);
         }
 
@@ -1472,7 +1468,7 @@ export class ClaudeCodeView extends ItemView {
     /**
      * Handle apply changes
      */
-    private async handleApplyChanges(): Promise<void> {
+    private handleApplyChanges(): void {
         const context = this.getCurrentContext();
 
         if (!context.currentResponse?.modifiedContent) {
@@ -1577,8 +1573,8 @@ export class ClaudeCodeView extends ItemView {
     /**
      * Generate diff HTML between original and modified content
      */
-    private generateDiff(original: string, modified: string): string {
-        return DiffGenerator.generateDiff(original, modified);
+    private generateDiffElement(original: string, modified: string): HTMLElement {
+        return DiffGenerator.generateDiffElement(original, modified);
     }
 
     /**
