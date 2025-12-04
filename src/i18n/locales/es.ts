@@ -93,6 +93,23 @@ export const es = {
     'diff.original': 'Original',
     'diff.modified': 'Modificado',
 
+    // Result Renderer
+    'result.directAnswer': 'Respuesta directa',
+    'result.additionalContext': 'Contexto adicional',
+    'result.tokens': 'tokens',
+    'result.tokensIn': 'entrada',
+    'result.tokensOut': 'salida',
+
+    // Preview Stats
+    'preview.originalLabel': 'Original:',
+    'preview.modifiedLabel': 'Modificado:',
+    'preview.charsLabel': 'caracteres',
+
+    // Misc
+    'misc.noPendingRequest': 'No se encontró solicitud pendiente',
+    'misc.languageChanged': 'Idioma cambiado. Algunos elementos de la interfaz se actualizarán al recargar.',
+    'misc.testFailed': 'Prueba de Claude Code fallida',
+
     // Settings
     'settings.autoDetectPath': 'Auto-detectar ruta de Claude Code',
     'settings.autoDetectPathDesc': 'Detectar automáticamente la ubicación del ejecutable de Claude Code',

@@ -93,6 +93,23 @@ export const en = {
     'diff.original': 'Original',
     'diff.modified': 'Modified',
 
+    // Result Renderer
+    'result.directAnswer': 'Direct answer',
+    'result.additionalContext': 'Additional Context',
+    'result.tokens': 'tokens',
+    'result.tokensIn': 'in',
+    'result.tokensOut': 'out',
+
+    // Preview Stats
+    'preview.originalLabel': 'Original:',
+    'preview.modifiedLabel': 'Modified:',
+    'preview.charsLabel': 'chars',
+
+    // Misc
+    'misc.noPendingRequest': 'No pending request found',
+    'misc.languageChanged': 'Language changed. Some UI elements will update on reload.',
+    'misc.testFailed': 'Claude Code test failed',
+
     // Settings
     'settings.autoDetectPath': 'Auto-detect Claude Code path',
     'settings.autoDetectPathDesc': 'Automatically detect the Claude Code executable location',

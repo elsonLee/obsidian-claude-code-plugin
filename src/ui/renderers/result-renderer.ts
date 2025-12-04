@@ -1,4 +1,5 @@
 import { TokenUsage } from '../../core/types';
+import { t } from '../../i18n';
 
 /**
  * Result Renderer - Formats Claude's responses with better structure
@@ -99,7 +100,7 @@ export class ResultRenderer {
             const additionalContent = currentContent.join('\n').trim();
             if (additionalContent) {
                 sections.push({
-                    title: 'Additional Context',
+                    title: t('result.additionalContext'),
                     content: additionalContent,
                     isCollapsed: true
                 });
@@ -143,7 +144,7 @@ export class ResultRenderer {
             const answerBox = container.createEl('div', { cls: 'result-direct-answer' });
             const answerLabel = answerBox.createEl('div', { cls: 'result-direct-answer-label' });
             answerLabel.createEl('span', { text: '💡' });
-            answerLabel.createEl('span', { text: ' Direct answer' });
+            answerLabel.createEl('span', { text: ' ' + t('result.directAnswer') });
 
             const answerContent = answerBox.createEl('div', { cls: 'result-direct-answer-content' });
             renderMarkdown(parsed.directAnswer, answerContent);
@@ -175,21 +176,21 @@ export class ResultRenderer {
             if (parsed.tokenInfo.total) {
                 footer.createEl('span', {
                     cls: 'result-token-badge',
-                    text: `📊 ${parsed.tokenInfo.total.toLocaleString()} tokens`
+                    text: `📊 ${parsed.tokenInfo.total.toLocaleString()} ${t('result.tokens')}`
                 });
             }
 
             if (parsed.tokenInfo.input) {
                 footer.createEl('span', {
                     cls: 'result-token-detail',
-                    text: `${parsed.tokenInfo.input.toLocaleString()} in`
+                    text: `${parsed.tokenInfo.input.toLocaleString()} ${t('result.tokensIn')}`
                 });
             }
 
             if (parsed.tokenInfo.output) {
                 footer.createEl('span', {
                     cls: 'result-token-detail',
-                    text: `${parsed.tokenInfo.output.toLocaleString()} out`
+                    text: `${parsed.tokenInfo.output.toLocaleString()} ${t('result.tokensOut')}`
                 });
             }
 

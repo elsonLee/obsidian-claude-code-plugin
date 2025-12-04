@@ -1,3 +1,5 @@
+import { t } from '../../i18n';
+
 /**
  * Utility for generating side-by-side diff views (IntelliJ-style)
  */
@@ -35,14 +37,14 @@ export class DiffGenerator {
         leftHeader.className = 'diff-column diff-column-left';
         const leftTitle = document.createElement('span');
         leftTitle.className = 'diff-header-title';
-        leftTitle.textContent = 'Original';
+        leftTitle.textContent = t('diff.original');
         leftHeader.appendChild(leftTitle);
 
         const rightHeader = document.createElement('div');
         rightHeader.className = 'diff-column diff-column-right';
         const rightTitle = document.createElement('span');
         rightTitle.className = 'diff-header-title';
-        rightTitle.textContent = 'Modified';
+        rightTitle.textContent = t('diff.modified');
         rightHeader.appendChild(rightTitle);
 
         header.appendChild(leftHeader);

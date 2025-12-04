@@ -93,6 +93,23 @@ export const zh = {
     'diff.original': '原始',
     'diff.modified': '修改后',
 
+    // Result Renderer
+    'result.directAnswer': '直接回答',
+    'result.additionalContext': '附加内容',
+    'result.tokens': '令牌',
+    'result.tokensIn': '输入',
+    'result.tokensOut': '输出',
+
+    // Preview Stats
+    'preview.originalLabel': '原始：',
+    'preview.modifiedLabel': '修改后：',
+    'preview.charsLabel': '字符',
+
+    // Misc
+    'misc.noPendingRequest': '未找到待处理的请求',
+    'misc.languageChanged': '语言已更改。部分界面元素将在重新加载后更新。',
+    'misc.testFailed': 'Claude Code 测试失败',
+
     // Settings
     'settings.autoDetectPath': '自动检测 Claude Code 路径',
     'settings.autoDetectPathDesc': '自动检测 Claude Code 可执行文件的位置',

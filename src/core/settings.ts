@@ -74,14 +74,14 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                         // Refresh settings display with new language
                         this.display();
                         // Notify user to reload for full effect
-                        new Notice('Language changed. Some UI elements will update on reload.');
+                        new Notice(t('misc.languageChanged'));
                     });
             });
 
         // Auto-detect Claude Code path
         new Setting(containerEl)
-            .setName('Auto-detect Claude Code path')
-            .setDesc('Automatically detect the Claude Code executable location')
+            .setName(t('settings.autoDetectPath'))
+            .setDesc(t('settings.autoDetectPathDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoDetectPath)
                 .onChange(async (value) => {
@@ -98,8 +98,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Claude Code executable path
         new Setting(containerEl)
-            .setName('Claude Code executable path')
-            .setDesc('Full path to the Claude Code executable (e.g., /usr/local/bin/claude)')
+            .setName(t('settings.executablePath'))
+            .setDesc(t('settings.executablePathDesc'))
             .addText(text => text
                 .setPlaceholder('/usr/local/bin/claude')
                 .setValue(this.plugin.settings.claudeCodePath)
@@ -111,29 +111,29 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Test Claude Code button
         new Setting(containerEl)
-            .setName('Test Claude Code installation')
-            .setDesc('Verify that Claude Code is accessible and working')
+            .setName(t('settings.testInstallation'))
+            .setDesc(t('settings.testInstallationDesc'))
             .addButton(button => button
-                .setButtonText('Test')
+                .setButtonText(t('settings.testButton'))
                 .onClick(() => {
                     void this.testClaudeCode().then(result => {
                         if (result.success) {
-                            button.setButtonText('✓ working!');
-                            setTimeout(() => { button.setButtonText('Test'); }, 2000);
+                            button.setButtonText('✓ ' + t('settings.testWorking'));
+                            setTimeout(() => { button.setButtonText(t('settings.testButton')); }, 2000);
                         } else {
-                            button.setButtonText('✗ failed');
-                            setTimeout(() => { button.setButtonText('Test'); }, 2000);
-                            new Notice(`Claude Code test failed: ${result.error}`);
+                            button.setButtonText('✗ ' + t('settings.testFailed'));
+                            setTimeout(() => { button.setButtonText(t('settings.testButton')); }, 2000);
+                            new Notice(`${t('misc.testFailed')}: ${result.error}`);
                         }
                     });
                 }));
 
         // Custom system prompt
         new Setting(containerEl)
-            .setName('Custom system prompt')
-            .setDesc('Optional custom system prompt to prepend to all requests')
+            .setName(t('settings.customPrompt'))
+            .setDesc(t('settings.customPromptDesc'))
             .addTextArea(text => {
-                text.setPlaceholder('You are helping edit markdown notes...')
+                text.setPlaceholder(t('settings.customPromptPlaceholder'))
                     .setValue(this.plugin.settings.customSystemPrompt)
                     .onChange(async (value) => {
                         this.plugin.settings.customSystemPrompt = value;
@@ -145,8 +145,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Preserve cursor position
         new Setting(containerEl)
-            .setName('Preserve cursor position')
-            .setDesc('Try to maintain cursor position after applying changes')
+            .setName(t('settings.preserveCursor'))
+            .setDesc(t('settings.preserveCursorDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.preserveCursorPosition)
                 .onChange(async (value) => {
@@ -156,8 +156,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Auto-accept changes
         new Setting(containerEl)
-            .setName('Auto-accept changes')
-            .setDesc('Automatically apply changes without showing preview (⚠️ use with caution!)')
+            .setName(t('settings.autoAcceptChanges'))
+            .setDesc(t('settings.autoAcceptChangesDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoAcceptChanges)
                 .onChange(async (value) => {
@@ -167,13 +167,13 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Model Alias
         new Setting(containerEl)
-            .setName('Model')
-            .setDesc('Select the Claude model to use: Sonnet (balanced), Opus (most capable), or Haiku (fastest). Leave empty to use the default subagent model.')
+            .setName(t('settings.model'))
+            .setDesc(t('settings.modelDesc'))
             .addDropdown(dropdown => dropdown
-                .addOption('', 'Default (subagent model)')
-                .addOption('sonnet', 'Sonnet (balanced)')
-                .addOption('opus', 'Opus (most capable)')
-                .addOption('haiku', 'Haiku (fastest)')
+                .addOption('', t('settings.modelDefault'))
+                .addOption('sonnet', t('settings.modelSonnet'))
+                .addOption('opus', t('settings.modelOpus'))
+                .addOption('haiku', t('settings.modelHaiku'))
                 .setValue(this.plugin.settings.modelAlias)
                 .onChange(async (value) => {
                     this.plugin.settings.modelAlias = value as 'sonnet' | 'opus' | 'haiku' | '';
@@ -182,8 +182,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Allow Vault Access
         new Setting(containerEl)
-            .setName('Allow vault-wide access')
-            .setDesc('Allow Claude to read/search other files in your vault (not just the current note)')
+            .setName(t('settings.vaultAccess'))
+            .setDesc(t('settings.vaultAccessDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.allowVaultAccess)
                 .onChange(async (value) => {
@@ -193,8 +193,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Enable Permissionless Mode
         new Setting(containerEl)
-            .setName('Enable permissionless mode')
-            .setDesc('Allow Claude to execute actions without asking for permission each time (⚠️ use with caution! Claude will have full control)')
+            .setName(t('settings.permissionlessMode'))
+            .setDesc(t('settings.permissionlessModeDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.enablePermissionlessMode)
                 .onChange(async (value) => {
@@ -204,8 +204,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Timeout
         new Setting(containerEl)
-            .setName('Timeout (seconds)')
-            .setDesc('Maximum time to wait for Claude Code response (0 = no timeout)')
+            .setName(t('settings.timeout'))
+            .setDesc(t('settings.timeoutDesc'))
             .addText(text => text
                 .setPlaceholder('300')
                 .setValue(String(this.plugin.settings.timeoutSeconds))
@@ -219,14 +219,14 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Custom API Configuration Section
         new Setting(containerEl)
-            .setName('Custom API configuration')
-            .setDesc('Configure custom API endpoints for regions where Claude is not directly available. Leave empty to use default settings.')
+            .setName(t('settings.customApiConfig'))
+            .setDesc(t('settings.customApiConfigDesc'))
             .setHeading();
 
         // Anthropic Base URL
         new Setting(containerEl)
-            .setName('API base URL')
-            .setDesc('Custom API endpoint URL (e.g., https://api.kimi.com/coding/)')
+            .setName(t('settings.apiBaseUrl'))
+            .setDesc(t('settings.apiBaseUrlDesc'))
             .addText(text => text
                 .setPlaceholder('https://api.anthropic.com')
                 .setValue(this.plugin.settings.anthropicBaseUrl)
@@ -237,10 +237,10 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Auth Token
         new Setting(containerEl)
-            .setName('API auth token')
-            .setDesc('Custom authentication token for the API endpoint')
+            .setName(t('settings.apiAuthToken'))
+            .setDesc(t('settings.apiAuthTokenDesc'))
             .addText(text => {
-                text.setPlaceholder('Enter your API token')
+                text.setPlaceholder(t('settings.apiAuthTokenPlaceholder'))
                     .setValue(this.plugin.settings.anthropicAuthToken)
                     .onChange(async (value) => {
                         this.plugin.settings.anthropicAuthToken = value.trim();
@@ -251,8 +251,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Model
         new Setting(containerEl)
-            .setName('Custom model')
-            .setDesc('Custom model name to use (e.g., kimi-for-coding). Overrides the model dropdown above.')
+            .setName(t('settings.customModel'))
+            .setDesc(t('settings.customModelDesc'))
             .addText(text => text
                 .setPlaceholder('claude-sonnet-4-20250514')
                 .setValue(this.plugin.settings.anthropicModel)
@@ -263,8 +263,8 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
 
         // Anthropic Small/Fast Model
         new Setting(containerEl)
-            .setName('Custom small/fast model')
-            .setDesc('Custom model name for fast operations (e.g., kimi-for-coding)')
+            .setName(t('settings.customSmallModel'))
+            .setDesc(t('settings.customSmallModelDesc'))
             .addText(text => text
                 .setPlaceholder('claude-haiku-3-5-20241022')
                 .setValue(this.plugin.settings.anthropicSmallFastModel)

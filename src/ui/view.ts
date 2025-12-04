@@ -852,8 +852,8 @@ export class ClaudeCodeView extends ItemView {
 
         // Show character count comparison
         const statsDiv = this.previewArea.createEl('div', { cls: 'claude-code-preview-stats' });
-        statsDiv.createEl('span', { text: `Original: ${originalContent.length} chars` });
-        statsDiv.createEl('span', { text: ` → Modified: ${modifiedContent.length} chars` });
+        statsDiv.createEl('span', { text: `${t('preview.originalLabel')} ${originalContent.length} ${t('preview.charsLabel')}` });
+        statsDiv.createEl('span', { text: ` → ${t('preview.modifiedLabel')} ${modifiedContent.length} ${t('preview.charsLabel')}` });
         statsDiv.createEl('span', { text: ` (${modifiedContent.length - originalContent.length >= 0 ? '+' : ''}${modifiedContent.length - originalContent.length})` });
 
         // Show the modified content in a code block (Raw tab)
@@ -1329,7 +1329,7 @@ export class ClaudeCodeView extends ItemView {
     private async handleApprovePermission(): Promise<void> {
         const context = this.getCurrentContext();
         if (!context.currentRequest) {
-            new Notice('No pending request found');
+            new Notice(t('misc.noPendingRequest'));
             return;
         }
 
@@ -1339,7 +1339,7 @@ export class ClaudeCodeView extends ItemView {
         // Get active file
         const file = this.app.workspace.getActiveFile();
         if (!file) {
-            new Notice('No active note found');
+            new Notice(t('notice.noActiveNote'));
             return;
         }
 
@@ -1355,7 +1355,7 @@ export class ClaudeCodeView extends ItemView {
         }
 
         if (!activeView || !activeView.editor) {
-            new Notice('No Markdown editor found');
+            new Notice(t('notice.noEditor'));
             return;
         }
 
