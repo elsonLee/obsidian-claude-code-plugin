@@ -63,6 +63,8 @@ release: ## Build and upload a new release (auto-increments patch version)
 	sed -i "s/\"version\": \"$$CURRENT_VERSION\"/\"version\": \"$$NEW_VERSION\"/" manifest.json; \
 	echo "Building plugin..."; \
 	npm run build; \
+	echo "Creating zip archive..."; \
+	zip -j build/claude-code-integration.zip build/main.js manifest.json build/styles.css; \
 	echo "Committing version bump..."; \
 	git add manifest.json; \
 	git commit -m "$$NEW_VERSION"; \
@@ -71,6 +73,6 @@ release: ## Build and upload a new release (auto-increments patch version)
 	echo "Pushing to remote..."; \
 	git push -u origin HEAD && git push origin --tags; \
 	echo "Creating GitHub release $$NEW_VERSION..."; \
-	gh release create $$NEW_VERSION build/main.js manifest.json build/styles.css --title "$$NEW_VERSION" --generate-notes || \
-	gh release upload $$NEW_VERSION build/main.js manifest.json build/styles.css --clobber; \
+	gh release create $$NEW_VERSION build/main.js manifest.json build/styles.css build/claude-code-integration.zip --title "$$NEW_VERSION" --generate-notes || \
+	gh release upload $$NEW_VERSION build/main.js manifest.json build/styles.css build/claude-code-integration.zip --clobber; \
 	echo "Release $$NEW_VERSION uploaded successfully!"
