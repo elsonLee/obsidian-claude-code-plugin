@@ -23,6 +23,13 @@ export interface ClaudeCodeSettings {
     anthropicSmallFastModel: string;
     // UI settings
     language: Locale;
+    // Remote WebSocket mode settings
+    enableRemoteMode: boolean;
+    remoteServerUrl: string;
+    remoteAuthToken: string;
+    remoteAutoReconnect: boolean;
+    remoteReconnectInterval: number;
+    remoteMaxReconnectAttempts: number;
 }
 
 export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
@@ -41,7 +48,14 @@ export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
     anthropicModel: '',
     anthropicSmallFastModel: '',
     // UI settings
-    language: 'en'
+    language: 'en',
+    // Remote WebSocket mode settings
+    enableRemoteMode: false,
+    remoteServerUrl: 'ws://localhost:8080',
+    remoteAuthToken: '',
+    remoteAutoReconnect: true,
+    remoteReconnectInterval: 3000,
+    remoteMaxReconnectAttempts: 10
 };
 
 export class ClaudeCodeSettingTab extends PluginSettingTab {
@@ -271,6 +285,92 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.anthropicSmallFastModel = value.trim();
                     await this.plugin.saveSettings();
+                }));
+
+        // Remote WebSocket Mode Section
+        new Setting(containerEl)
+            .setName('Remote Mode (WebSocket)')
+            .setDesc('Connect to remote Claude relay server instead of running Claude locally')
+            .setHeading();
+
+        // Enable Remote Mode
+        new Setting(containerEl)
+            .setName('Enable remote mode')
+            .setDesc('Use WebSocket connection to remote Claude server instead of local Claude Code')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.enableRemoteMode)
+                .onChange(async (value) => {
+                    this.plugin.settings.enableRemoteMode = value;
+                    await this.plugin.saveSettings();
+                    // Notify user to reload
+                    new Notice('Remote mode ' + (value ? 'enabled' : 'disabled') + '. Reload Obsidian to apply changes.');
+                }));
+
+        // Server URL
+        new Setting(containerEl)
+            .setName('Server URL')
+            .setDesc('WebSocket server URL (e.g., ws://localhost:8080 or wss://your-server.com)')
+            .addText(text => text
+                .setPlaceholder('ws://localhost:8080')
+                .setValue(this.plugin.settings.remoteServerUrl)
+                .onChange(async (value) => {
+                    this.plugin.settings.remoteServerUrl = value.trim();
+                    await this.plugin.saveSettings();
+                }));
+
+        // Auth Token (optional)
+        new Setting(containerEl)
+            .setName('Auth token (optional)')
+            .setDesc('Optional authentication token for server connection')
+            .addText(text => {
+                text.setPlaceholder('your-auth-token')
+                    .setValue(this.plugin.settings.remoteAuthToken)
+                    .onChange(async (value) => {
+                        this.plugin.settings.remoteAuthToken = value.trim();
+                        await this.plugin.saveSettings();
+                    });
+                text.inputEl.type = 'password';
+            });
+
+        // Auto-reconnect
+        new Setting(containerEl)
+            .setName('Auto-reconnect')
+            .setDesc('Automatically reconnect to server if connection is lost')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.remoteAutoReconnect)
+                .onChange(async (value) => {
+                    this.plugin.settings.remoteAutoReconnect = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Reconnect Interval
+        new Setting(containerEl)
+            .setName('Reconnect interval (ms)')
+            .setDesc('Initial reconnection delay in milliseconds (will increase exponentially)')
+            .addText(text => text
+                .setPlaceholder('3000')
+                .setValue(String(this.plugin.settings.remoteReconnectInterval))
+                .onChange(async (value) => {
+                    const num = parseInt(value);
+                    if (!isNaN(num) && num >= 1000) {
+                        this.plugin.settings.remoteReconnectInterval = num;
+                        await this.plugin.saveSettings();
+                    }
+                }));
+
+        // Max Reconnect Attempts
+        new Setting(containerEl)
+            .setName('Max reconnect attempts')
+            .setDesc('Maximum number of reconnection attempts before giving up')
+            .addText(text => text
+                .setPlaceholder('10')
+                .setValue(String(this.plugin.settings.remoteMaxReconnectAttempts))
+                .onChange(async (value) => {
+                    const num = parseInt(value);
+                    if (!isNaN(num) && num >= 1) {
+                        this.plugin.settings.remoteMaxReconnectAttempts = num;
+                        await this.plugin.saveSettings();
+                    }
                 }));
     }
 
