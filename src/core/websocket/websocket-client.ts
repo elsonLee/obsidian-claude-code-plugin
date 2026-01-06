@@ -146,6 +146,13 @@ export class WebSocketClient {
     }
 
     /**
+     * Get current connection state (alias for compatibility)
+     */
+    getState(): ConnectionState {
+        return this.state;
+    }
+
+    /**
      * Register message callback
      */
     onMessage(callback: MessageCallback): () => void {
