@@ -26,6 +26,9 @@ export interface UIElements {
     denyPermissionButton: HTMLButtonElement;
     currentNoteLabel: HTMLDivElement;
     historyList: HTMLUListElement;
+    connectionStatusBar?: HTMLDivElement;
+    connectionStatusIcon?: HTMLSpanElement;
+    connectionStatusText?: HTMLSpanElement;
 }
 
 export class UIBuilder {
@@ -507,5 +510,68 @@ export class UIBuilder {
         });
 
         return historyList;
+    }
+
+    /**
+     * Build WebSocket connection status bar
+     */
+    static buildConnectionStatusBar(container: HTMLElement): {
+        statusBar: HTMLDivElement;
+        statusIcon: HTMLSpanElement;
+        statusText: HTMLSpanElement;
+    } {
+        const statusBar = container.createEl('div', { cls: 'claude-code-connection-status' });
+
+        // Status icon (colored dot)
+        const statusIcon = statusBar.createEl('span', {
+            cls: 'claude-code-connection-icon disconnected'
+        });
+
+        // Status text
+        const statusText = statusBar.createEl('span', {
+            cls: 'claude-code-connection-text',
+            text: 'Disconnected'
+        });
+
+        return { statusBar, statusIcon, statusText };
+    }
+
+    /**
+     * Update connection status display
+     */
+    static updateConnectionStatus(
+        statusIcon: HTMLSpanElement,
+        statusText: HTMLSpanElement,
+        state: string,
+        connectionMode?: 'stdio' | 'websocket'
+    ): void {
+        // Remove all state classes
+        statusIcon.removeClass('disconnected', 'connecting', 'connected', 'error');
+
+        // Add appropriate class and text
+        switch (state) {
+            case 'connected':
+                statusIcon.addClass('connected');
+                statusText.textContent = connectionMode === 'websocket'
+                    ? 'WebSocket Connected'
+                    : 'Connected (stdio)';
+                break;
+            case 'connecting':
+            case 'reconnecting':
+                statusIcon.addClass('connecting');
+                statusText.textContent = 'Connecting...';
+                break;
+            case 'error':
+                statusIcon.addClass('error');
+                statusText.textContent = 'Connection Error';
+                break;
+            case 'disconnected':
+            default:
+                statusIcon.addClass('disconnected');
+                statusText.textContent = connectionMode === 'websocket'
+                    ? 'WebSocket Disconnected'
+                    : 'Disconnected';
+                break;
+        }
     }
 }
