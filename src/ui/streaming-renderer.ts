@@ -4,7 +4,7 @@
  */
 
 import { MarkdownRenderer as ObsidianMarkdownRenderer } from 'obsidian';
-import ClaudeCodeView from './view';
+import { ClaudeCodeView } from './view';
 
 export interface StreamChunk {
     content: string;
@@ -155,7 +155,7 @@ export class StreamingRenderer {
      * Add metadata display (token usage, model, etc.)
      */
     private addMetadata(metadata: StreamChunk['metadata']): void {
-        if (!this.currentStreamElement) {
+        if (!this.currentStreamElement || !metadata) {
             return;
         }
 
