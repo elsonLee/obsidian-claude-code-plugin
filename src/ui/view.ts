@@ -24,6 +24,8 @@ import { AgentActivityTracker } from './agent-activity-tracker';
 import { NoteContextManager } from '../managers/note-context-manager';
 import { OutputStatusManager } from './parsers/output-status-manager';
 import { DiffGenerator } from './renderers/diff-generator';
+import { ToolCallTracker } from './tool-call-tracker';
+import { ToolCallDisplay } from './components/tool-call-display';
 
 export class ClaudeCodeView extends ItemView {
     plugin: ClaudeCodePlugin;
@@ -56,6 +58,8 @@ export class ClaudeCodeView extends ItemView {
     private contextManager: NoteContextManager;
     private outputRenderer: OutputRenderer;
     private agentTracker: AgentActivityTracker;
+    private toolCallTracker: ToolCallTracker;
+    private toolCallDisplay: ToolCallDisplay | null = null;
 
     // State
     private currentNotePath: string = '';
@@ -85,6 +89,7 @@ export class ClaudeCodeView extends ItemView {
             `${this.app.vault.configDir}/claude-code-sessions`
         );
         this.agentTracker = new AgentActivityTracker();
+        this.toolCallTracker = new ToolCallTracker();
 
         // Listen for active file changes
         this.registerEvent(
@@ -104,6 +109,13 @@ export class ClaudeCodeView extends ItemView {
 
     getIcon(): string {
         return 'bot';
+    }
+
+    /**
+     * Get the tool call tracker instance
+     */
+    getToolCallTracker(): ToolCallTracker {
+        return this.toolCallTracker;
     }
 
     async onOpen(): Promise<void> {
@@ -234,12 +246,18 @@ export class ClaudeCodeView extends ItemView {
             this.agentTracker.initialize(activityColumn as HTMLElement);
         }
 
-        // Output section (fourth)
+        // Tool Call Display section (fourth)
+        const toolCallSection = container.createEl('div', {
+            cls: 'claude-code-tool-call-section'
+        });
+        this.toolCallDisplay = new ToolCallDisplay(toolCallSection, this.toolCallTracker);
+
+        // Output section (fifth)
         const outputSectionResult = UIBuilder.buildOutputSection(container);
         this.outputArea = outputSectionResult.outputArea;
         this.outputSection = outputSectionResult.outputSection;
 
-        // History section (fifth)
+        // History section (sixth)
         this.historyList = UIBuilder.buildHistorySection(
             container,
             () => this.clearHistory()

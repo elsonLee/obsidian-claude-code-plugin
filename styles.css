@@ -1498,3 +1498,167 @@
         opacity: 0.5;
     }
 }
+
+/* Tool Call Display */
+.claude-code-tool-call-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.claude-code-tool-call-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.claude-code-tool-call-stats {
+    display: flex;
+    gap: 12px;
+    font-size: var(--font-smallest);
+    color: var(--text-muted);
+}
+
+.claude-code-stat-total {
+    color: var(--text-normal);
+}
+
+.claude-code-stat-pending {
+    color: var(--text-accent);
+}
+
+.claude-code-stat-running {
+    color: var(--color-orange);
+}
+
+.claude-code-stat-completed {
+    color: var(--color-green);
+}
+
+.claude-code-stat-failed {
+    color: var(--color-red);
+}
+
+.claude-code-tool-calls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.claude-code-tool-call {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.claude-code-tool-call:hover {
+    border-color: var(--interactive-accent);
+}
+
+.claude-code-tool-call-header-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.claude-code-tool-call-header-section.clickable:hover {
+    background: var(--background-modifier-hover);
+}
+
+.claude-code-tool-call-status-icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.claude-code-status-pending {
+    background-color: var(--text-faint);
+}
+
+.claude-code-status-running {
+    background-color: var(--color-orange);
+    animation: pulse 1s infinite;
+}
+
+.claude-code-status-completed {
+    background-color: var(--color-green);
+}
+
+.claude-code-status-failed {
+    background-color: var(--color-red);
+}
+
+.claude-code-tool-call-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-normal);
+    flex: 1;
+}
+
+.claude-code-tool-call-duration {
+    font-size: var(--font-smallest);
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.claude-code-tool-call-details {
+    padding: 0 12px 12px;
+    border-top: 1px solid var(--background-modifier-border);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.claude-code-tool-call-details.collapsed {
+    display: none;
+}
+
+.claude-code-tool-call-arguments,
+.claude-code-tool-call-result,
+.claude-code-tool-call-error {
+    margin-top: 12px;
+}
+
+.claude-code-tool-call-arguments h4,
+.claude-code-tool-call-result h4,
+.claude-code-tool-call-error h4 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.claude-code-tool-call-arguments pre,
+.claude-code-tool-call-result pre,
+.claude-code-tool-call-error pre {
+    margin: 0;
+    padding: 8px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    font-size: var(--font-smallest);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.claude-code-tool-call-result {
+    color: var(--color-green);
+}
+
+.claude-code-tool-call-error {
+    color: var(--color-red);
+}
