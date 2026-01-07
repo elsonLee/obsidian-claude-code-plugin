@@ -1,0 +1,782 @@
+{
+  "inputs": {
+    "src/core/types.ts": {
+      "bytes": 1838,
+      "imports": [
+        {
+          "path": "./claude-code-runner",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./claude-code-runner",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/i18n/locales/en.ts": {
+      "bytes": 7440,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/i18n/locales/zh.ts": {
+      "bytes": 7347,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/i18n/locales/es.ts": {
+      "bytes": 8122,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/i18n/locales/de.ts": {
+      "bytes": 8146,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/i18n/locales/pt.ts": {
+      "bytes": 8142,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/i18n/index.ts": {
+      "bytes": 2711,
+      "imports": [
+        {
+          "path": "src/i18n/locales/en.ts",
+          "kind": "import-statement",
+          "original": "./locales/en"
+        },
+        {
+          "path": "src/i18n/locales/zh.ts",
+          "kind": "import-statement",
+          "original": "./locales/zh"
+        },
+        {
+          "path": "src/i18n/locales/es.ts",
+          "kind": "import-statement",
+          "original": "./locales/es"
+        },
+        {
+          "path": "src/i18n/locales/de.ts",
+          "kind": "import-statement",
+          "original": "./locales/de"
+        },
+        {
+          "path": "src/i18n/locales/pt.ts",
+          "kind": "import-statement",
+          "original": "./locales/pt"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/ui-builder.ts": {
+      "bytes": 24584,
+      "imports": [
+        {
+          "path": "src/i18n/index.ts",
+          "kind": "import-statement",
+          "original": "../i18n"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/parsers/agent-activity-parser.ts": {
+      "bytes": 8414,
+      "imports": [
+        {
+          "path": "../../core/types",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/output-renderer.ts": {
+      "bytes": 3583,
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../core/types",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/ui/parsers/agent-activity-parser.ts",
+          "kind": "import-statement",
+          "original": "./parsers/agent-activity-parser"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/agent-activity-tracker.ts": {
+      "bytes": 6344,
+      "imports": [
+        {
+          "path": "../core/types",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/streaming/tool-output-formatter.ts": {
+      "bytes": 10551,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/core/streaming/stream-event-processor.ts": {
+      "bytes": 9842,
+      "imports": [
+        {
+          "path": "src/core/streaming/tool-output-formatter.ts",
+          "kind": "import-statement",
+          "original": "./tool-output-formatter"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/session-manager.ts": {
+      "bytes": 3795,
+      "imports": [
+        {
+          "path": "fs",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/prompt-builder.ts": {
+      "bytes": 5352,
+      "imports": [
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./claude-code-runner",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/cli-args-builder.ts": {
+      "bytes": 1748,
+      "imports": [
+        {
+          "path": "./settings",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/process-spawner.ts": {
+      "bytes": 14082,
+      "imports": [
+        {
+          "path": "child_process",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "os",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/response-parser.ts": {
+      "bytes": 3134,
+      "imports": [
+        {
+          "path": "./claude-code-runner",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./types",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/streaming/response-content-extractor.ts": {
+      "bytes": 512,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/core/claude-code-runner.ts": {
+      "bytes": 18156,
+      "imports": [
+        {
+          "path": "child_process",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "string_decoder",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./settings",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/core/streaming/stream-event-processor.ts",
+          "kind": "import-statement",
+          "original": "./streaming/stream-event-processor"
+        },
+        {
+          "path": "src/core/session-manager.ts",
+          "kind": "import-statement",
+          "original": "./session-manager"
+        },
+        {
+          "path": "src/core/prompt-builder.ts",
+          "kind": "import-statement",
+          "original": "./prompt-builder"
+        },
+        {
+          "path": "src/core/cli-args-builder.ts",
+          "kind": "import-statement",
+          "original": "./cli-args-builder"
+        },
+        {
+          "path": "src/core/process-spawner.ts",
+          "kind": "import-statement",
+          "original": "./process-spawner"
+        },
+        {
+          "path": "src/core/response-parser.ts",
+          "kind": "import-statement",
+          "original": "./response-parser"
+        },
+        {
+          "path": "src/core/streaming/response-content-extractor.ts",
+          "kind": "import-statement",
+          "original": "./streaming/response-content-extractor"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/managers/note-context-manager.ts": {
+      "bytes": 5705,
+      "imports": [
+        {
+          "path": "fs",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../core/types",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/core/claude-code-runner.ts",
+          "kind": "import-statement",
+          "original": "../core/claude-code-runner"
+        },
+        {
+          "path": "../core/settings",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/parsers/output-status-manager.ts": {
+      "bytes": 3869,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/ui/renderers/diff-generator.ts": {
+      "bytes": 6423,
+      "imports": [
+        {
+          "path": "src/i18n/index.ts",
+          "kind": "import-statement",
+          "original": "../../i18n"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/tool-call-tracker.ts": {
+      "bytes": 3980,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/ui/components/tool-call-display.ts": {
+      "bytes": 9726,
+      "imports": [
+        {
+          "path": "../tool-call-tracker",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/streaming-renderer.ts": {
+      "bytes": 7093,
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./view",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/ui/view.ts": {
+      "bytes": 85191,
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../main",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../core/claude-code-runner",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/core/types.ts",
+          "kind": "import-statement",
+          "original": "../core/types"
+        },
+        {
+          "path": "src/ui/ui-builder.ts",
+          "kind": "import-statement",
+          "original": "./ui-builder"
+        },
+        {
+          "path": "src/i18n/index.ts",
+          "kind": "import-statement",
+          "original": "../i18n"
+        },
+        {
+          "path": "src/ui/output-renderer.ts",
+          "kind": "import-statement",
+          "original": "./output-renderer"
+        },
+        {
+          "path": "src/ui/agent-activity-tracker.ts",
+          "kind": "import-statement",
+          "original": "./agent-activity-tracker"
+        },
+        {
+          "path": "src/managers/note-context-manager.ts",
+          "kind": "import-statement",
+          "original": "../managers/note-context-manager"
+        },
+        {
+          "path": "src/ui/parsers/output-status-manager.ts",
+          "kind": "import-statement",
+          "original": "./parsers/output-status-manager"
+        },
+        {
+          "path": "src/ui/renderers/diff-generator.ts",
+          "kind": "import-statement",
+          "original": "./renderers/diff-generator"
+        },
+        {
+          "path": "src/ui/tool-call-tracker.ts",
+          "kind": "import-statement",
+          "original": "./tool-call-tracker"
+        },
+        {
+          "path": "src/ui/components/tool-call-display.ts",
+          "kind": "import-statement",
+          "original": "./components/tool-call-display"
+        },
+        {
+          "path": "src/ui/streaming-renderer.ts",
+          "kind": "import-statement",
+          "original": "./streaming-renderer"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/settings.ts": {
+      "bytes": 20048,
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../main",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "child_process",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "os",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/i18n/index.ts",
+          "kind": "import-statement",
+          "original": "../i18n"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "src/main.ts": {
+      "bytes": 3637,
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/ui/view.ts",
+          "kind": "import-statement",
+          "original": "./ui/view"
+        },
+        {
+          "path": "src/core/types.ts",
+          "kind": "import-statement",
+          "original": "./core/types"
+        },
+        {
+          "path": "src/core/settings.ts",
+          "kind": "import-statement",
+          "original": "./core/settings"
+        },
+        {
+          "path": "src/i18n/index.ts",
+          "kind": "import-statement",
+          "original": "./i18n"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "main.js": {
+      "imports": [
+        {
+          "path": "obsidian",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "obsidian",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "obsidian",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "string_decoder",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "child_process",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "os",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "obsidian",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "obsidian",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "child_process",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "os",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "fs",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "exports": [],
+      "entryPoint": "src/main.ts",
+      "inputs": {
+        "src/main.ts": {
+          "bytesInOutput": 2675
+        },
+        "src/ui/view.ts": {
+          "bytesInOutput": 60941
+        },
+        "src/core/types.ts": {
+          "bytesInOutput": 48
+        },
+        "src/i18n/locales/en.ts": {
+          "bytesInOutput": 7055
+        },
+        "src/i18n/locales/zh.ts": {
+          "bytesInOutput": 9652
+        },
+        "src/i18n/locales/es.ts": {
+          "bytesInOutput": 7919
+        },
+        "src/i18n/locales/de.ts": {
+          "bytesInOutput": 7942
+        },
+        "src/i18n/locales/pt.ts": {
+          "bytesInOutput": 8056
+        },
+        "src/i18n/index.ts": {
+          "bytesInOutput": 1476
+        },
+        "src/ui/ui-builder.ts": {
+          "bytesInOutput": 18351
+        },
+        "src/ui/output-renderer.ts": {
+          "bytesInOutput": 2388
+        },
+        "src/ui/parsers/agent-activity-parser.ts": {
+          "bytesInOutput": 6488
+        },
+        "src/ui/agent-activity-tracker.ts": {
+          "bytesInOutput": 4454
+        },
+        "src/managers/note-context-manager.ts": {
+          "bytesInOutput": 4108
+        },
+        "src/core/claude-code-runner.ts": {
+          "bytesInOutput": 12607
+        },
+        "src/core/streaming/tool-output-formatter.ts": {
+          "bytesInOutput": 7957
+        },
+        "src/core/streaming/stream-event-processor.ts": {
+          "bytesInOutput": 5972
+        },
+        "src/core/session-manager.ts": {
+          "bytesInOutput": 2629
+        },
+        "src/core/prompt-builder.ts": {
+          "bytesInOutput": 4152
+        },
+        "src/core/cli-args-builder.ts": {
+          "bytesInOutput": 1036
+        },
+        "src/core/process-spawner.ts": {
+          "bytesInOutput": 9484
+        },
+        "src/core/response-parser.ts": {
+          "bytesInOutput": 1769
+        },
+        "src/core/streaming/response-content-extractor.ts": {
+          "bytesInOutput": 344
+        },
+        "src/ui/parsers/output-status-manager.ts": {
+          "bytesInOutput": 3158
+        },
+        "src/ui/renderers/diff-generator.ts": {
+          "bytesInOutput": 4815
+        },
+        "src/ui/tool-call-tracker.ts": {
+          "bytesInOutput": 2694
+        },
+        "src/ui/components/tool-call-display.ts": {
+          "bytesInOutput": 7193
+        },
+        "src/ui/streaming-renderer.ts": {
+          "bytesInOutput": 4899
+        },
+        "src/core/settings.ts": {
+          "bytesInOutput": 14631
+        }
+      },
+      "bytes": 800486
+    }
+  }
+}

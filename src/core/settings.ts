@@ -372,6 +372,52 @@ export class ClaudeCodeSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }
                 }));
+
+        // Test Connection Button
+        new Setting(containerEl)
+            .setName('Test connection')
+            .setDesc('Verify that the remote server is accessible')
+            .addButton(button => button
+                .setButtonText('Test Connection')
+                .onClick(() => {
+                    button.setButtonText('Testing...');
+                    button.setDisabled(true);
+
+                    void this.testRemoteConnection().then(result => {
+                        button.setDisabled(false);
+                        if (result.success) {
+                            button.setButtonText('✓ Connected');
+                            setTimeout(() => { button.setButtonText('Test Connection'); }, 2000);
+                            new Notice('Successfully connected to remote server');
+                        } else {
+                            button.setButtonText('✗ Failed');
+                            setTimeout(() => { button.setButtonText('Test Connection'); }, 2000);
+                            new Notice(`Connection failed: ${result.error}`);
+                        }
+                    });
+                }));
+    }
+
+    /**
+     * Test remote WebSocket connection
+     */
+    private async testRemoteConnection(): Promise<{ success: boolean; error?: string }> {
+        try {
+            const { WebSocketClient } = await import('./websocket/websocket-client');
+
+            const client = new WebSocketClient({
+                url: this.plugin.settings.remoteServerUrl,
+                conversationId: 'test-connection-' + Date.now(),
+                autoReconnect: false,
+                connectTimeout: 5000
+            });
+
+            await client.connect();
+            client.disconnect();
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
     }
 
     /**
