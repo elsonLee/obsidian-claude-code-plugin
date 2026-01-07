@@ -26,6 +26,7 @@ import { OutputStatusManager } from './parsers/output-status-manager';
 import { DiffGenerator } from './renderers/diff-generator';
 import { ToolCallTracker } from './tool-call-tracker';
 import { ToolCallDisplay } from './components/tool-call-display';
+import { StreamingRenderer } from './streaming-renderer';
 
 export class ClaudeCodeView extends ItemView {
     plugin: ClaudeCodePlugin;
@@ -60,6 +61,7 @@ export class ClaudeCodeView extends ItemView {
     private agentTracker: AgentActivityTracker;
     private toolCallTracker: ToolCallTracker;
     private toolCallDisplay: ToolCallDisplay | null = null;
+    private streamingRenderer: StreamingRenderer | null = null;
 
     // State
     private currentNotePath: string = '';
@@ -118,6 +120,13 @@ export class ClaudeCodeView extends ItemView {
         return this.toolCallTracker;
     }
 
+    /**
+     * Get the streaming renderer instance
+     */
+    getStreamingRenderer(): StreamingRenderer | null {
+        return this.streamingRenderer;
+    }
+
     async onOpen(): Promise<void> {
         const container = this.containerEl.children[1] as HTMLElement;
         container.empty();
@@ -140,6 +149,9 @@ export class ClaudeCodeView extends ItemView {
 
         // Initialize output renderer now that outputArea exists
         this.outputRenderer = new OutputRenderer(this.outputArea, this, this.app, this.currentNotePath, this.outputSection);
+
+        // Initialize streaming renderer for WebSocket mode
+        this.streamingRenderer = new StreamingRenderer(this, this.outputArea);
 
         // Load context for current note
         if (this.currentNotePath) {

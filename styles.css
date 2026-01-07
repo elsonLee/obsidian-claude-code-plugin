@@ -1662,3 +1662,116 @@
 .claude-code-tool-call-error {
     color: var(--color-red);
 }
+
+/* Streaming Response */
+.claude-code-streaming-response {
+    border: 1px solid var(--interactive-accent);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    margin-bottom: 12px;
+    overflow: hidden;
+    animation: streamFadeIn 0.3s ease;
+}
+
+@keyframes streamFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.claude-code-stream-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--background-modifier-hover);
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.claude-code-stream-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-normal);
+}
+
+.claude-code-stream-status {
+    font-size: var(--font-smallest);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.claude-code-stream-status.streaming {
+    background: var(--color-accent-2);
+    color: var(--color-accent);
+    animation: pulse 1.5s infinite;
+}
+
+.claude-code-stream-status.complete {
+    background: var(--color-green);
+    color: white;
+}
+
+.claude-code-stream-status.cancelled {
+    background: var(--color-red);
+    color: white;
+}
+
+.claude-code-stream-content {
+    padding: 12px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.claude-code-stream-content p {
+    margin: 0 0 12px 0;
+}
+
+.claude-code-stream-content p:last-child {
+    margin-bottom: 0;
+}
+
+.claude-code-stream-content pre {
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+.claude-code-stream-content code {
+    font-family: var(--font-monospace);
+    font-size: var(--font-smallest);
+}
+
+.claude-code-stream-metadata {
+    display: flex;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--background-primary);
+    border-top: 1px solid var(--background-modifier-border);
+    font-size: var(--font-smallest);
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.claude-code-metadata-item {
+    padding: 2px 6px;
+    background: var(--background-secondary);
+    border-radius: 3px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+.claude-code-response {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
